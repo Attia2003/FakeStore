@@ -17,23 +17,24 @@ import retrofit2.http.Path
 interface ApiService {
 
     @GET("products")
-    suspend fun getAllProducts():List<getProducts>
+    suspend fun getAllProducts(): List<getProducts>
 
     @GET("products/{id}")
-    suspend fun getproductByID(@Path("id") id : Int): getproductbyid
+    suspend fun getproductByID(@Path("id") id: Int): getproductbyid
 
     @POST("products")
-    suspend fun createProduct(@Body request : CreateProductRequest): CreateProductResponse
+    suspend fun createProduct(@Body request: CreateProductRequest): CreateProductResponse
 
     @GET("categories")
     suspend fun getAllCategories(): List<CategoryDto>
 
     @POST("users/")
-    suspend fun signUp(@Body request : SignUpRequest): SignUpResponse
+    suspend fun signUp(@Body request: SignUpRequest): SignUpResponse
 
     @POST("auth/login")
-    suspend fun login(@Body request : loginRequest): LoginResponse
-}
+    suspend fun login(@Body request: loginRequest): LoginResponse
 
+
+}
 
 

@@ -27,6 +27,16 @@ import com.example.fakestore.core.peresention.components.*
 import com.example.fakestore.core.peresention.uistate.SignUpUiState
 import com.example.fakestore.core.peresention.vm.SignUpViewModel
 
+/**
+ * SignUp Screen - Pure Presentation Layer
+ * 
+ * This composable follows Clean Architecture principles:
+ * - No business logic or validation rules
+ * - No local state management for inputs
+ * - Only observes ViewModel state
+ * - Delegates all events to ViewModel
+ * - Handles only UI-specific side effects (toasts, navigation)
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
@@ -34,23 +44,23 @@ fun SignUpScreen(
     onSignUpSuccess: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {}
 ) {
+    // Observe all state from ViewModel
     val uiState by viewModel.uiState.collectAsState()
+    val name by viewModel.name.collectAsState()
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val confirmPassword by viewModel.confirmPassword.collectAsState()
+    val nameError by viewModel.nameError.collectAsState()
+    val emailError by viewModel.emailError.collectAsState()
+    val passwordError by viewModel.passwordError.collectAsState()
+    val confirmPasswordError by viewModel.confirmPasswordError.collectAsState()
+    val passwordVisible by viewModel.passwordVisible.collectAsState()
+    val confirmPasswordVisible by viewModel.confirmPasswordVisible.collectAsState()
+
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var confirmPasswordVisible by remember { mutableStateOf(false) }
-
-    var nameError by remember { mutableStateOf<String?>(null) }
-    var emailError by remember { mutableStateOf<String?>(null) }
-    var passwordError by remember { mutableStateOf<String?>(null) }
-    var confirmPasswordError by remember { mutableStateOf<String?>(null) }
-
-
+    // Handle UI side effects (Toast messages and navigation)
     LaunchedEffect(uiState) {
         when (val state = uiState) {
             is SignUpUiState.Success -> {
@@ -71,53 +81,6 @@ fun SignUpScreen(
                 viewModel.resetState()
             }
             else -> {}
-        }
-    }
-
-
-    fun validateInputs(): Boolean {
-        var isValid = true
-        nameError = null
-        emailError = null
-        passwordError = null
-        confirmPasswordError = null
-
-        if (name.isBlank()) {
-            nameError = "Name is required"
-            isValid = false
-        }
-
-        if (email.isBlank()) {
-            emailError = "Email is required"
-            isValid = false
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailError = "Invalid email format"
-            isValid = false
-        }
-
-        if (password.isBlank()) {
-            passwordError = "Password is required"
-            isValid = false
-        } else if (password.length < 6) {
-            passwordError = "Password must be at least 6 characters"
-            isValid = false
-        }
-
-        if (confirmPassword.isBlank()) {
-            confirmPasswordError = "Please confirm your password"
-            isValid = false
-        } else if (password != confirmPassword) {
-            confirmPasswordError = "Passwords do not match"
-            isValid = false
-        }
-
-        return isValid
-    }
-
-    fun handleSignUp() {
-        focusManager.clearFocus()
-        if (validateInputs()) {
-            viewModel.signUp(name, email, password)
         }
     }
 
@@ -142,7 +105,7 @@ fun SignUpScreen(
         ) {
             Spacer(modifier = Modifier.height(60.dp))
 
-
+            // Header
             AuthHeader(
                 title = "Create Account",
                 subtitle = "Sign up to get started"
@@ -150,13 +113,10 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-
+            // Name Field - Delegates to ViewModel
             AuthTextField(
                 value = name,
-                onValueChange = {
-                    name = it
-                    nameError = null
-                },
+                onValueChange = viewModel::onNameChange,
                 label = "Full Name",
                 placeholder = "Enter your name",
                 leadingIcon = Icons.Default.Person,
@@ -170,13 +130,10 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
+            // Email Field - Delegates to ViewModel
             AuthTextField(
                 value = email,
-                onValueChange = {
-                    email = it
-                    emailError = null
-                },
+                onValueChange = viewModel::onEmailChange,
                 label = "Email",
                 placeholder = "Enter your email",
                 leadingIcon = Icons.Default.Email,
@@ -190,17 +147,14 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
+            // Password Field - Delegates to ViewModel
             PasswordTextField(
                 value = password,
-                onValueChange = {
-                    password = it
-                    passwordError = null
-                },
+                onValueChange = viewModel::onPasswordChange,
                 label = "Password",
                 placeholder = "Enter your password",
                 passwordVisible = passwordVisible,
-                onPasswordVisibilityChange = { passwordVisible = !passwordVisible },
+                onPasswordVisibilityChange = { viewModel.onPasswordVisibilityToggle() },
                 errorMessage = passwordError,
                 imeAction = ImeAction.Next,
                 keyboardActions = KeyboardActions(
@@ -210,36 +164,39 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
+            // Confirm Password Field - Delegates to ViewModel
             PasswordTextField(
                 value = confirmPassword,
-                onValueChange = {
-                    confirmPassword = it
-                    confirmPasswordError = null
-                },
+                onValueChange = viewModel::onConfirmPasswordChange,
                 label = "Confirm Password",
                 placeholder = "Re-enter your password",
                 passwordVisible = confirmPasswordVisible,
-                onPasswordVisibilityChange = { confirmPasswordVisible = !confirmPasswordVisible },
+                onPasswordVisibilityChange = { viewModel.onConfirmPasswordVisibilityToggle() },
                 errorMessage = confirmPasswordError,
                 imeAction = ImeAction.Done,
                 keyboardActions = KeyboardActions(
-                    onDone = { handleSignUp() }
+                    onDone = { 
+                        focusManager.clearFocus()
+                        viewModel.onSignUpClick()
+                    }
                 )
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-
+            // Sign Up Button - Delegates to ViewModel
             AuthButton(
                 text = "Sign Up",
-                onClick = { handleSignUp() },
+                onClick = { 
+                    focusManager.clearFocus()
+                    viewModel.onSignUpClick()
+                },
                 isLoading = uiState is SignUpUiState.Loading
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-
+            // Login Navigation
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,

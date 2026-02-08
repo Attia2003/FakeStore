@@ -29,6 +29,7 @@ import com.example.fakestore.core.peresention.components.*
 import com.example.fakestore.core.peresention.uistate.LoginUiState
 import com.example.fakestore.core.peresention.vm.LoginViewModel
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
@@ -36,16 +37,16 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit = {},
     onNavigateToSignUp: () -> Unit = {}
 ) {
+
     val uiState by viewModel.uiState.collectAsState()
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val emailError by viewModel.emailError.collectAsState()
+    val passwordError by viewModel.passwordError.collectAsState()
+    val passwordVisible by viewModel.passwordVisible.collectAsState()
+
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-
-    var emailError by remember { mutableStateOf<String?>(null) }
-    var passwordError by remember { mutableStateOf<String?>(null) }
 
 
     LaunchedEffect(uiState) {
@@ -68,38 +69,6 @@ fun LoginScreen(
                 viewModel.resetState()
             }
             else -> {}
-        }
-    }
-
-
-    fun validateInputs(): Boolean {
-        var isValid = true
-        emailError = null
-        passwordError = null
-
-        if (email.isBlank()) {
-            emailError = "Email is required"
-            isValid = false
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailError = "Invalid email format"
-            isValid = false
-        }
-
-        if (password.isBlank()) {
-            passwordError = "Password is required"
-            isValid = false
-        } else if (password.length < 6) {
-            passwordError = "Password must be at least 6 characters"
-            isValid = false
-        }
-
-        return isValid
-    }
-
-    fun handleLogin() {
-        focusManager.clearFocus()
-        if (validateInputs()) {
-            viewModel.login(email, password)
         }
     }
 
@@ -132,12 +101,10 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(64.dp))
 
+
             AuthTextField(
                 value = email,
-                onValueChange = {
-                    email = it
-                    emailError = null
-                },
+                onValueChange = viewModel::onEmailChange,
                 label = "Email",
                 placeholder = "Enter your email",
                 leadingIcon = Icons.Default.Email,
@@ -154,18 +121,18 @@ fun LoginScreen(
 
             PasswordTextField(
                 value = password,
-                onValueChange = {
-                    password = it
-                    passwordError = null
-                },
+                onValueChange = viewModel::onPasswordChange,
                 label = "Password",
                 placeholder = "Enter your password",
                 passwordVisible = passwordVisible,
-                onPasswordVisibilityChange = { passwordVisible = !passwordVisible },
+                onPasswordVisibilityChange = { viewModel.onPasswordVisibilityToggle() },
                 errorMessage = passwordError,
                 imeAction = ImeAction.Done,
                 keyboardActions = KeyboardActions(
-                    onDone = { handleLogin() }
+                    onDone = { 
+                        focusManager.clearFocus()
+                        viewModel.onLoginClick()
+                    }
                 )
             )
 
@@ -199,7 +166,10 @@ fun LoginScreen(
 
             AuthButton(
                 text = "Login",
-                onClick = { handleLogin() },
+                onClick = { 
+                    focusManager.clearFocus()
+                    viewModel.onLoginClick() 
+                },
                 isLoading = uiState is LoginUiState.Loading
             )
 
