@@ -55,7 +55,7 @@ fun AppNavGraph() {
                     AccountScreen()
                 }
                 
-                // Login screen
+
                 composable(Routes.LOGIN) {
                     LoginScreen(
                         onLoginSuccess = {
@@ -71,7 +71,7 @@ fun AppNavGraph() {
                     )
                 }
 
-                // Signup screen
+
                 composable(Routes.SIGNUP) {
                     SignUpScreen(
                         onSignUpSuccess = {
@@ -85,7 +85,7 @@ fun AppNavGraph() {
                     )
                 }
                 
-                // Product details screen
+
                 composable(
                     route = Routes.DETAILS,
                     arguments = listOf(navArgument("id") { type = NavType.IntType })

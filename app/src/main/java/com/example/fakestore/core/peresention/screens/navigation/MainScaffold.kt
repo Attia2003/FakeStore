@@ -31,13 +31,13 @@ fun MainScaffold(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     
-    // Routes where bottom bar should be hidden
+
     val routesWithoutBottomBar = listOf(
         Routes.LOGIN,
         Routes.SIGNUP
     )
     
-    // Check if current route should show bottom bar
+
     val shouldShowBottomBar = currentDestination?.route !in routesWithoutBottomBar
 
     Scaffold(

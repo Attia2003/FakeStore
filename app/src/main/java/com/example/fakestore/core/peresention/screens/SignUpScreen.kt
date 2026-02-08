@@ -142,7 +142,7 @@ fun SignUpScreen(
         ) {
             Spacer(modifier = Modifier.height(60.dp))
 
-            // Header
+
             AuthHeader(
                 title = "Create Account",
                 subtitle = "Sign up to get started"
@@ -150,7 +150,7 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Name Field
+
             AuthTextField(
                 value = name,
                 onValueChange = {
@@ -170,7 +170,7 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Email Field
+
             AuthTextField(
                 value = email,
                 onValueChange = {

@@ -96,7 +96,7 @@ fun AddProductScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Title Field
+
                 OutlinedTextField(
                     value = title,
                     onValueChange = {
@@ -114,7 +114,7 @@ fun AddProductScreen(
                     singleLine = true
                 )
 
-                // Price Field
+
                 OutlinedTextField(
                     value = price,
                     onValueChange = {
@@ -134,7 +134,7 @@ fun AddProductScreen(
                     prefix = { Text("$") }
                 )
 
-                // Description Field
+
                 OutlinedTextField(
                     value = description,
                     onValueChange = {
@@ -153,7 +153,7 @@ fun AddProductScreen(
                     maxLines = 6
                 )
 
-                // Image URL Field
+
                 OutlinedTextField(
                     value = imageUrl,
                     onValueChange = { imageUrl = it },
@@ -163,7 +163,7 @@ fun AddProductScreen(
                     placeholder = { Text("https://example.com/image.jpg") }
                 )
 
-                // Category ID Field
+
                 OutlinedTextField(
                     value = categoryId,
                     onValueChange = { categoryId = it },
@@ -175,10 +175,10 @@ fun AddProductScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Submit Button
+
                 Button(
                     onClick = {
-                        // Validate inputs
+
                         titleError = title.isBlank()
                         priceError = price.isBlank() || price.toLongOrNull() == null
                         descriptionError = description.isBlank()
@@ -214,7 +214,7 @@ fun AddProductScreen(
                     }
                 }
 
-                // Helper Text
+
                 Text(
                     text = "* Required fields",
                     style = MaterialTheme.typography.bodySmall,

@@ -71,7 +71,7 @@ fun LoginScreen(
         }
     }
 
-    // Validation logic
+
     fun validateInputs(): Boolean {
         var isValid = true
         emailError = null
