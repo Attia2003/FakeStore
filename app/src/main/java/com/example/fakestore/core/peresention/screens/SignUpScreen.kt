@@ -44,7 +44,7 @@ fun SignUpScreen(
     onSignUpSuccess: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {}
 ) {
-    // Observe all state from ViewModel
+
     val uiState by viewModel.uiState.collectAsState()
     val name by viewModel.name.collectAsState()
     val email by viewModel.email.collectAsState()
@@ -60,7 +60,7 @@ fun SignUpScreen(
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
-    // Handle UI side effects (Toast messages and navigation)
+
     LaunchedEffect(uiState) {
         when (val state = uiState) {
             is SignUpUiState.Success -> {
@@ -105,7 +105,7 @@ fun SignUpScreen(
         ) {
             Spacer(modifier = Modifier.height(60.dp))
 
-            // Header
+
             AuthHeader(
                 title = "Create Account",
                 subtitle = "Sign up to get started"
@@ -113,7 +113,7 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Name Field - Delegates to ViewModel
+
             AuthTextField(
                 value = name,
                 onValueChange = viewModel::onNameChange,
@@ -130,7 +130,7 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Email Field - Delegates to ViewModel
+
             AuthTextField(
                 value = email,
                 onValueChange = viewModel::onEmailChange,
@@ -147,7 +147,7 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Password Field - Delegates to ViewModel
+
             PasswordTextField(
                 value = password,
                 onValueChange = viewModel::onPasswordChange,
@@ -164,7 +164,7 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Confirm Password Field - Delegates to ViewModel
+
             PasswordTextField(
                 value = confirmPassword,
                 onValueChange = viewModel::onConfirmPasswordChange,
@@ -184,7 +184,7 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Sign Up Button - Delegates to ViewModel
+
             AuthButton(
                 text = "Sign Up",
                 onClick = { 
@@ -196,7 +196,6 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Login Navigation
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,

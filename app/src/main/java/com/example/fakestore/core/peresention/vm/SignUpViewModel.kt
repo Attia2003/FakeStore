@@ -26,11 +26,11 @@ class SignUpViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase
 ) : ViewModel() {
 
-    // UI State for API calls
+
     private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Idle)
     val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
 
-    // Input fields state
+
     private val _name = MutableStateFlow("")
     val name: StateFlow<String> = _name.asStateFlow()
 
