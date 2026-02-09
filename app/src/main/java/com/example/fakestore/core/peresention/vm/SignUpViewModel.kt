@@ -7,20 +7,15 @@ import androidx.lifecycle.viewModelScope
 import com.example.fakestore.core.data.dto.SignUpRequest
 import com.example.fakestore.core.domain.usecases.SignUpUseCase
 import com.example.fakestore.core.peresention.uistate.SignUpUiState
-import com.example.fakestore.core.peresention.uistate.UiError
+import com.example.fakestore.core.peresention.util.toUiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 
-/**
- * ViewModel for SignUp Screen following Clean Architecture principles.
- * Owns all business logic, validation, and state management.
- */
+
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase
@@ -189,15 +184,9 @@ class SignUpViewModel @Inject constructor(
                 val response = signUpUseCase.call(request)
                 _uiState.value = SignUpUiState.Success(response)
                 Log.d("SignUp", "User created: $response")
-            } catch (ioe: IOException) {
-                Log.d("SignUpError", "IO Error: ${ioe.message}")
-                _uiState.value = SignUpUiState.Error(UiError.NoInternet)
-            } catch (e: HttpException) {
-                Log.d("SignUpError", "HTTP Error: ${e.code()}")
-                _uiState.value = SignUpUiState.Error(UiError.Http(e.code()))
             } catch (e: Exception) {
-                Log.d("SignUpError", "Unknown Error: ${e.message}")
-                _uiState.value = SignUpUiState.Error(UiError.Unknown)
+                Log.d("SignUpError", "Error: ${e.message}")
+                _uiState.value = SignUpUiState.Error(e.toUiError())
             }
         }
     }

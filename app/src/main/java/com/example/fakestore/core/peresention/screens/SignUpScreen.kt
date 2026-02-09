@@ -27,16 +27,6 @@ import com.example.fakestore.core.peresention.components.*
 import com.example.fakestore.core.peresention.uistate.SignUpUiState
 import com.example.fakestore.core.peresention.vm.SignUpViewModel
 
-/**
- * SignUp Screen - Pure Presentation Layer
- * 
- * This composable follows Clean Architecture principles:
- * - No business logic or validation rules
- * - No local state management for inputs
- * - Only observes ViewModel state
- * - Delegates all events to ViewModel
- * - Handles only UI-specific side effects (toasts, navigation)
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(

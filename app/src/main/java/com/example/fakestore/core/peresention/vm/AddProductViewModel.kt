@@ -6,13 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.fakestore.core.data.dto.CreateProductRequest
 import com.example.fakestore.core.domain.usecases.AddProductUseCase
 import com.example.fakestore.core.peresention.uistate.AddProductUiState
-import com.example.fakestore.core.peresention.uistate.UiError
+import com.example.fakestore.core.peresention.util.toUiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,15 +41,9 @@ class AddProductViewModel @Inject constructor(
                 val response = addProductUseCase.call(request)
                 _uiState.value = AddProductUiState.Success(response)
                 Log.d("AddProduct", "Product created: $response")
-            } catch (ioe: IOException) {
-                Log.d("AddProductError", "IO Error: ${ioe.message}")
-                _uiState.value = AddProductUiState.Error(UiError.NoInternet)
-            } catch (e: HttpException) {
-                Log.d("AddProductError", "HTTP Error: ${e.code()}")
-                _uiState.value = AddProductUiState.Error(UiError.Http(e.code()))
             } catch (e: Exception) {
-                Log.d("AddProductError", "Unknown Error: ${e.message}")
-                _uiState.value = AddProductUiState.Error(UiError.Unknown)
+                Log.d("AddProductError", "Error: ${e.message}")
+                _uiState.value = AddProductUiState.Error(e.toUiError())
             }
         }
     }

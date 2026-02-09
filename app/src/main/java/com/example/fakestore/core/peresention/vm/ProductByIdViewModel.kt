@@ -5,14 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fakestore.core.domain.usecases.ProductByIdUseCaase
 import com.example.fakestore.core.peresention.uistate.ProductByIdUiState
-import com.example.fakestore.core.peresention.uistate.UiError
+import com.example.fakestore.core.peresention.util.toUiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.io.IOException
 import javax.inject.Inject
-import retrofit2.HttpException
 
 
 
@@ -34,17 +32,9 @@ class ProductByIdViewModel @Inject constructor(
                 val product = getProductByIdUseCase.call(id)
                 Log.d("ProductByIdViewModel", "Fetched product: $product")
                 _productByIdState.value = ProductByIdUiState.Success(product)
-            } catch (io: IOException) {
-                Log.e("ProductByIdViewModel", "IOException caught: ${io.message}", io)
-                _productByIdState.value = ProductByIdUiState.Error(UiError.NoInternet)
-            } catch (http: HttpException) {
-                Log.e("ProductByIdViewModel", "HttpException caught: ${http.code()} - ${http.message()}", http)
-                _productByIdState.value = ProductByIdUiState.Error(UiError.Http(http.code()))
             } catch (e: Exception) {
-                Log.e("ProductByIdViewModel", "Unknown Exception caught: ${e.message}", e)
-                Log.e("ProductByIdViewModel", "Exception type: ${e.javaClass.name}")
-                e.printStackTrace()
-                _productByIdState.value = ProductByIdUiState.Error(UiError.Unknown)
+                Log.e("ProductByIdViewModel", "Exception caught: ${e.message}", e)
+                _productByIdState.value = ProductByIdUiState.Error(e.toUiError())
             }
         }
     }
