@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -75,6 +76,18 @@ fun HomeScreen(
         }
         
         previousScrollOffset.value = currentScrollOffset
+    }
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            .collect { lastIndex ->
+                if (lastIndex != null && lastIndex >= listState.layoutInfo.totalItemsCount - 1) {
+                    val currentState = state
+                    if (currentState is ProductUiState.Success && currentState.products.isNotEmpty()) {
+                        vm.loadNextPage()
+                    }
+                }
+            }
     }
 
     LaunchedEffect(Unit) {
@@ -170,13 +183,6 @@ fun HomeScreen(
                                     if (rowProducts.size < 2) {
                                         Spacer(modifier = Modifier.weight(1f))
                                     }
-                                }
-                            }
-                        }
-                        item {
-                            LaunchedEffect(isstate.products.size) {
-                                if (isstate.products.isNotEmpty()) {
-                                    vm.loadNextPage()
                                 }
                             }
                         }
