@@ -2,8 +2,6 @@ package com.example.fakestore.core.domain.contract
 
 import com.example.fakestore.core.data.dto.getProducts
 
-interface productRepository{
-    suspend fun getAllProducts(offset: Int, limit: Int):List<getProducts>
+interface CategoryByIdRepository {
+    suspend fun getProductsByCategory(id: Int): List<getProducts>
 }
-
-

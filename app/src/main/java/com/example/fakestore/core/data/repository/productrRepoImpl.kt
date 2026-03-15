@@ -7,8 +7,8 @@ import com.example.fakestore.core.data.remote.ApiService
 import javax.inject.Inject
 
 class productrRepoImpl @Inject constructor(val api: ApiService) : productRepository {
-    override suspend fun getAllProducts(): List<getProducts> {
-        return api.getAllProducts()
+    override suspend fun getAllProducts(offset: Int, limit: Int): List<getProducts> {
+        return api.getAllProducts(offset, limit)
 
 
 

@@ -107,58 +107,86 @@ fun HomeScreen(
                 Spacer(Modifier.height(16.dp))
             }
 
-            item {
                 when (val isstate = state) {
                     ProductUiState.Idle -> {
-
+                        item {
+                        }
                     }
 
                     ProductUiState.Loading -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(130.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(130.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
                         }
                     }
 
                     is ProductUiState.Error -> {
-                        val message = when (val eror = isstate.eror) {
-                            UiError.NoInternet -> "Check ur Internet"
-                            is UiError.Http -> "Error ${eror.code}"
-                            UiError.Unknown -> "Unknown Error"
-                            else -> ""
-                        }
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 12.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(text = message)
-                            Button(onClick = { vm.getFirstProduct() }) {
-                                Text("Retry")
+                        item {
+                            val message = when (val eror = isstate.eror) {
+                                UiError.NoInternet -> "Check ur Internet"
+                                is UiError.Http -> "Error ${eror.code}"
+                                UiError.Unknown -> "Unknown Error"
+                                else -> ""
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(text = message)
+                                Button(onClick = { vm.getFirstProduct() }) {
+                                    Text("Retry")
+                                }
                             }
                         }
                     }
 
                     is ProductUiState.Success -> {
-                        ProductHorizontalRow(
-                            products = isstate.products,
-                            onItemClick = onProductClick
-                        )
+                        val products = isstate.products
+                        val rows = products.chunked(2)
+                        rows.forEachIndexed { index, rowProducts ->
+                            item(key = "row_$index") {
+                                androidx.compose.foundation.layout.Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+                                ) {
+                                    for (product in rowProducts) {
+                                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                                            HorizontalCardProduct(
+                                                product = product,
+                                                onClick = { onProductClick(product) }
+                                            )
+                                        }
+                                    }
+                                    if (rowProducts.size < 2) {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
+                                }
+                            }
+                        }
+                        item {
+                            LaunchedEffect(isstate.products.size) {
+                                if (isstate.products.isNotEmpty()) {
+                                    vm.loadNextPage()
+                                }
+                            }
+                        }
                     }
                 }
-            }
-
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-
 
         AnimatedVisibility(
             visible = isFabVisible,
@@ -181,29 +209,4 @@ fun HomeScreen(
             }
         }
     }
-}
-
-
-
-
-@Composable
-fun ProductHorizontalRow(
-    products : List<getProducts>,
-    onItemClick : (getProducts) -> Unit
-) {
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(products, key = { it.id }) { product ->
-            HorizontalCardProduct(
-                product = product,
-                onClick = { onItemClick(product) }
-            )
-
-        }
-
-    }
-
 }

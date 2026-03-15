@@ -6,7 +6,9 @@ object Routes {
     const val ACCOUNT = "Account"
     const val PRODUCTS = "Products"
     const val DETAILS = "Details/{id}"
+    const val CATEGORY_DETAIL = "CategoryDetail/{id}"
     const val SIGNUP = "Signup"
     const val LOGIN = "Login"
-    fun details(id: Int) = "details/$id"
+    fun details(id: Int) = "Details/$id"
+    fun categoryDetail(id: Int) = "CategoryDetail/$id"
 }

@@ -20,9 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fakestore.core.peresention.uistate.UiError
 
-/**
- * Reusable authentication text field component
- */
+
 @Composable
 fun AuthTextField(
     value: String,
@@ -64,9 +62,7 @@ fun AuthTextField(
     )
 }
 
-/**
- * Reusable password text field with visibility toggle
- */
+
 @Composable
 fun PasswordTextField(
     value: String,
@@ -118,9 +114,7 @@ fun PasswordTextField(
     )
 }
 
-/**
- * Reusable authentication header section
- */
+
 @Composable
 fun AuthHeader(
     title: String,
@@ -149,9 +143,7 @@ fun AuthHeader(
     }
 }
 
-/**
- * Reusable authentication button with loading state
- */
+
 @Composable
 fun AuthButton(
     text: String,
@@ -189,9 +181,7 @@ fun AuthButton(
     }
 }
 
-/**
- * Reusable error card for displaying error messages
- */
+
 @Composable
 fun ErrorCard(
     errorMessage: String,
@@ -229,9 +219,7 @@ fun ErrorCard(
     }
 }
 
-/**
- * Helper function to get user-friendly error message from UiError
- */
+
 fun UiError.toMessage(): String = when (this) {
     is UiError.NoInternet -> "No internet connection. Please check your network."
     is UiError.InvalidCredentials -> "Incorrect email or password."
