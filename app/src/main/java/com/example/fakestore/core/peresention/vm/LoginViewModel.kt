@@ -4,6 +4,7 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fakestore.core.data.dto.loginRequest
+import com.example.fakestore.core.data.local.TokenManager
 import com.example.fakestore.core.peresention.uistate.LoginUiState
 import com.example.fakestore.core.peresention.util.toUiError
 import com.example.fakestore.core.domain.usecases.LoginUseCase
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
 
@@ -110,6 +112,10 @@ class LoginViewModel @Inject constructor(
                     password = password
                 )
                 val response = loginUseCase.call(request)
+                tokenManager.saveTokens(
+                    accessToken = response.accessToken,
+                    refreshToken = response.refreshToken
+                )
                 _uiState.value = LoginUiState.Success(response)
             } catch (e: Exception) {
                 _uiState.value = LoginUiState.Error(e.toUiError())

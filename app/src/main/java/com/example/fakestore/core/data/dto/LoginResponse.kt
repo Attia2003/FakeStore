@@ -1,6 +1,8 @@
 package com.example.fakestore.core.data.dto
 
+import com.google.gson.annotations.SerializedName
+
 data class LoginResponse(
-    val accessToken: String,
-    val refreshToken: String
+    @SerializedName("access_token") val accessToken: String,
+    @SerializedName("refresh_token") val refreshToken: String
 )
