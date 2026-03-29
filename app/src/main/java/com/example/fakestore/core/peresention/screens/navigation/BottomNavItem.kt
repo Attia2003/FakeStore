@@ -7,18 +7,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 
 sealed class BottomNavItem(
-    val route: String,
+    val screen: Screen,
     val title: String,
     val icon: ImageVector
 ) {
     data object Home : BottomNavItem(
-        route = Routes.HOME,
+        screen = Screen.Home,
         title = "Home",
         icon = Icons.Default.Home
     )
-    
+
     data object Account : BottomNavItem(
-        route = Routes.ACCOUNT,
+        screen = Screen.Account,
         title = "Account",
         icon = Icons.Default.Person
     )

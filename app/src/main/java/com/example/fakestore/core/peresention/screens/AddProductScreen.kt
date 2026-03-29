@@ -58,6 +58,7 @@ fun AddProductScreen(
                     UiError.Unknown -> "An error occurred"
                     else -> ""
                 }
+
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 viewModel.resetState()
             }

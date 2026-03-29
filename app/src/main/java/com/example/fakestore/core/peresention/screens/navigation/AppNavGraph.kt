@@ -2,7 +2,10 @@ package com.example.fakestore.core.peresention.screens.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,8 +16,10 @@ import com.example.fakestore.core.peresention.screens.AddProductScreen
 import com.example.fakestore.core.peresention.screens.HomeScreen
 import com.example.fakestore.core.peresention.screens.LoginScreen
 import com.example.fakestore.core.peresention.screens.SignUpScreen
+import com.example.fakestore.core.peresention.screens.SplashScreen
 import com.example.fakestore.core.peresention.screens.component.CategoryByIdScreen
 import com.example.fakestore.core.peresention.screens.component.getProductById
+import com.example.fakestore.core.peresention.vm.SessionViewModel
 import com.example.fakestore.ui.theme.FakeStoreTheme
 
 
@@ -22,76 +27,85 @@ import com.example.fakestore.ui.theme.FakeStoreTheme
 fun AppNavGraph() {
     FakeStoreTheme {
         val navController = rememberNavController()
-        
+
+        val sessionViewModel: SessionViewModel = hiltViewModel()
+        val isLoggedIn by sessionViewModel.isLoggedIn.collectAsStateWithLifecycle()
 
         MainScaffold(navController = navController) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = Routes.LOGIN,
+                startDestination = Screen.Splash.route,
                 modifier = Modifier.padding(paddingValues)
             ) {
 
-                composable(Routes.HOME) {
-                    HomeScreen(
-                        onProductClick = { product ->
-                            navController.navigate(Routes.details(product.id))
-                        },
-                        onAddProductClick = {
-                            navController.navigate(Routes.ADD_PRODUCT)
-                        },
-                        onCategoryClick = { category ->
-                            navController.navigate(Routes.categoryDetail(category.id))
+                composable(Screen.Splash.route) {
+                    SplashScreen(
+                        isLoggedIn = isLoggedIn,
+                        onNavigate = { loggedIn ->
+                            val destination = if (loggedIn) Screen.Home.route else Screen.Login.route
+                            navController.navigate(destination) {
+                                popUpTo(Screen.Splash.route) { inclusive = true }
+                            }
                         }
                     )
                 }
 
+                composable(Screen.Home.route) {
+                    HomeScreen(
+                        onProductClick = { product ->
+                            navController.navigate(Screen.Details.createRoute(product.id))
+                        },
+                        onAddProductClick = {
+                            navController.navigate(Screen.AddProduct.route)
+                        },
+                        onCategoryClick = { category ->
+                            navController.navigate(Screen.CategoryDetail.createRoute(category.id))
+                        }
+                    )
+                }
 
-                composable(Routes.ADD_PRODUCT) {
+                composable(Screen.AddProduct.route) {
                     AddProductScreen(
                         onProductCreated = {
                             navController.popBackStack()
                         }
                     )
                 }
-                
 
-                composable(Routes.ACCOUNT) {
+                composable(Screen.Account.route) {
                     AccountScreen()
                 }
-                
 
-                composable(Routes.LOGIN) {
+                composable(Screen.Login.route) {
                     LoginScreen(
                         onLoginSuccess = {
-                            navController.navigate(Routes.HOME) {
-                                popUpTo(Routes.LOGIN) { inclusive = true }
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Login.route) { inclusive = true }
                             }
                         },
                         onNavigateToSignUp = {
-                            navController.navigate(Routes.SIGNUP) {
-                                popUpTo(Routes.LOGIN) { inclusive = true }
+                            navController.navigate(Screen.SignUp.route) {
+                                popUpTo(Screen.Login.route) { inclusive = true }
                             }
                         }
                     )
                 }
 
-
-                composable(Routes.SIGNUP) {
+                composable(Screen.SignUp.route) {
                     SignUpScreen(
                         onSignUpSuccess = {
-                            navController.navigate(Routes.HOME) {
-                                popUpTo(Routes.SIGNUP) { inclusive = true }
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.SignUp.route) { inclusive = true }
                             }
                         },
                         onNavigateToLogin = {
-                            navController.navigate(Routes.LOGIN)
+                            navController.navigate(Screen.Login.route)
                         }
                     )
                 }
-                
 
                 composable(
-                    route = Routes.DETAILS,
+                    route = Screen.Details.route,
                     arguments = listOf(navArgument("id") { type = NavType.IntType })
                 ) { entry ->
                     val id = entry.arguments?.getInt("id") ?: return@composable
@@ -102,7 +116,7 @@ fun AppNavGraph() {
                 }
 
                 composable(
-                    route = Routes.CATEGORY_DETAIL,
+                    route = Screen.CategoryDetail.route,
                     arguments = listOf(navArgument("id") { type = NavType.IntType })
                 ) { entry ->
                     val id = entry.arguments?.getInt("id") ?: return@composable
@@ -110,11 +124,11 @@ fun AppNavGraph() {
                         id = id,
                         onNavigateBack = { navController.popBackStack() },
                         onProductClick = { productId ->
-                            navController.navigate(Routes.details(productId))
+                            navController.navigate(Screen.Details.createRoute(productId))
                         }
                     )
                 }
             }
         }
     }
-}
+}

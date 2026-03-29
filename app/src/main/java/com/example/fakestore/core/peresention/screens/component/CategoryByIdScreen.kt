@@ -248,7 +248,7 @@ fun ProductGridCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .background(Color.White) // Some images might have transparency
+                    .background(Color.White)
             ) {
                 AsyncImage(
                     model = imageUrl,

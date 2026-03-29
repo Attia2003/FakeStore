@@ -30,13 +30,12 @@ fun MainScaffold(
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    
 
     val routesWithoutBottomBar = listOf(
-        Routes.LOGIN,
-        Routes.SIGNUP
+        Screen.Login.route,
+        Screen.SignUp.route,
+        Screen.Splash.route
     )
-    
 
     val shouldShowBottomBar = currentDestination?.route !in routesWithoutBottomBar
 
@@ -54,10 +53,10 @@ fun MainScaffold(
                         tonalElevation = 0.dp
                     ) {
                         bottomNavItems.forEach { item ->
-                            val isSelected = currentDestination?.hierarchy?.any { 
-                                it.route == item.route 
+                            val isSelected = currentDestination?.hierarchy?.any {
+                                it.route == item.screen.route
                             } == true
-                            
+
                             NavigationBarItem(
                                 icon = {
                                     Icon(
@@ -74,14 +73,11 @@ fun MainScaffold(
                                     unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                 ),
                                 onClick = {
-                                    navController.navigate(item.route) {
-
+                                    navController.navigate(item.screen.route) {
                                         popUpTo(navController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
-
                                         launchSingleTop = true
-
                                         restoreState = true
                                     }
                                 }

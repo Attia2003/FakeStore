@@ -6,7 +6,7 @@ import com.example.fakestore.core.data.dto.CreateProductResponse
 import com.example.fakestore.core.data.dto.LoginResponse
 import com.example.fakestore.core.data.dto.SignUpRequest
 import com.example.fakestore.core.data.dto.SignUpResponse
-import com.example.fakestore.core.data.dto.getAllCategoriesid
+
 import com.example.fakestore.core.data.dto.getProducts
 import com.example.fakestore.core.data.dto.getproductbyid
 import com.example.fakestore.core.data.dto.loginRequest

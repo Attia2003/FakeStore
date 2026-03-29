@@ -6,6 +6,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -89,10 +91,10 @@ fun PasswordTextField(
         },
         trailingIcon = {
             IconButton(onClick = onPasswordVisibilityChange) {
-                Text(
-                    text = if (passwordVisible) "HIDE" else "SHOW",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
+                Icon(
+                    imageVector = if (passwordVisible) Icons.Filled.VisibilityOff
+                    else Icons.Filled.Visibility,
+                    contentDescription = if (passwordVisible) "Hide password" else "Show password"
                 )
             }
         },
