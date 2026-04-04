@@ -3,8 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.dagger.hilt.android")
-    kotlin("kapt")
-
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -54,12 +53,15 @@ android {
 }
 
 dependencies {
+    implementation("com.google.errorprone:error_prone_annotations:2.22.0")
+
+
     //coli image
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
     //hilt
     implementation("com.google.dagger:hilt-android:2.54")
-    kapt("com.google.dagger:hilt-compiler:2.54")
+    ksp("com.google.dagger:hilt-compiler:2.54")
 
 
     //  Compose + ViewModel
@@ -78,6 +80,11 @@ dependencies {
 
     //coroutiens
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+
+    // Room
+    implementation("androidx.room:room-runtime:2.7.0")
+    implementation("androidx.room:room-ktx:2.7.0")
+    ksp("androidx.room:room-compiler:2.7.0")
 
     implementation("androidx.compose.material:material-icons-extended")
 

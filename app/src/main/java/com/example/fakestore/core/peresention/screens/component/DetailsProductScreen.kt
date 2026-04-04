@@ -15,8 +15,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
+
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.example.fakestore.core.peresention.uistate.ProductByIdUiState
 import com.example.fakestore.core.peresention.uistate.UiError
+import com.example.fakestore.core.peresention.vm.CartViewModel
 import com.example.fakestore.core.peresention.vm.ProductByIdViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +47,8 @@ import com.example.fakestore.core.peresention.vm.ProductByIdViewModel
 fun getProductById(
     id:Int,
     onNavigateBack: () -> Unit = {},
-    vm: ProductByIdViewModel = hiltViewModel()
+    vm: ProductByIdViewModel = hiltViewModel(),
+    cartVm: CartViewModel = hiltViewModel()
 ) {
     val state by vm.productByIdState.collectAsState()
 
@@ -55,6 +57,7 @@ fun getProductById(
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.padding(bottom = 16.dp),
                 title = { Text("Product Details") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
@@ -65,7 +68,7 @@ fun getProductById(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    containerColor = MaterialTheme.colorScheme.background,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
@@ -75,7 +78,7 @@ fun getProductById(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(top = 12.dp)
+                .padding(top = 6.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             when (val istate = state) {
@@ -112,16 +115,6 @@ fun getProductById(
         is ProductByIdUiState.Success -> {
             val product = istate.product
             val imageUrl = product.images?.firstOrNull()
-            
-//            // Debug logging
-//            android.util.Log.d("DetailsScreen", "SUCCESS STATE REACHED!")
-//            android.util.Log.d("DetailsScreen", "Product ID: ${product.id}")
-//            android.util.Log.d("DetailsScreen", "Product Title: ${product.title}")
-//            android.util.Log.d("DetailsScreen", "Product Price: ${product.price}")
-//            android.util.Log.d("DetailsScreen", "Image URL: $imageUrl")
-//            android.util.Log.d("DetailsScreen", "Category: ${product.category.name}")
-
-
 
             Column (
                 modifier = Modifier
@@ -171,6 +164,33 @@ fun getProductById(
                     Spacer(Modifier.height(8.dp))
 
                     Text(product.description.orEmpty())
+
+                    Spacer(Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            cartVm.addToCart(
+                                productId = product.id,
+                                title = product.title.orEmpty(),
+                                price = product.price.toDouble(),
+                                imageUrl = imageUrl ?: ""
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Text(
+                            text = "Add to Cart",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
@@ -178,8 +198,5 @@ fun getProductById(
         }
     }
 }
-
-
-
 
 

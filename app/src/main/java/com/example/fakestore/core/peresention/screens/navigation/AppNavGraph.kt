@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.fakestore.core.peresention.screens.AccountScreen
 import com.example.fakestore.core.peresention.screens.AddProductScreen
+import com.example.fakestore.core.peresention.screens.CartScreen
 import com.example.fakestore.core.peresention.screens.HomeScreen
 import com.example.fakestore.core.peresention.screens.LoginScreen
 import com.example.fakestore.core.peresention.screens.SignUpScreen
@@ -68,6 +69,16 @@ fun AppNavGraph() {
                     AddProductScreen(
                         onProductCreated = {
                             navController.popBackStack()
+                        }
+                    )
+                }
+
+                composable(Screen.Cart.route) {
+                    CartScreen(
+                        onGoShopping = {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Home.route) { inclusive = false }
+                            }
                         }
                     )
                 }
