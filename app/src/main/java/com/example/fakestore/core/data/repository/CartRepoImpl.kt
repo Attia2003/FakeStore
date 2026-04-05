@@ -25,6 +25,8 @@ class CartRepoImpl @Inject constructor(private val dao: CartDao) : CartRepositor
         dao.update(existing.copy(quantity = quantity))
     }
 
+
+
     override suspend fun removeFromCart(id: Int) {
         dao.deleteById(id)
     }
