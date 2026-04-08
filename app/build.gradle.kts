@@ -55,6 +55,9 @@ android {
 dependencies {
     implementation("com.google.errorprone:error_prone_annotations:2.22.0")
 
+    // SQLCipher — AES-256 encryption
+    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
+    implementation("androidx.sqlite:sqlite-ktx:2.4.0")
 
     //coli image
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
@@ -85,6 +88,8 @@ dependencies {
     implementation("androidx.room:room-runtime:2.7.0")
     implementation("androidx.room:room-ktx:2.7.0")
     ksp("androidx.room:room-compiler:2.7.0")
+
+
 
     implementation("androidx.compose.material:material-icons-extended")
 
