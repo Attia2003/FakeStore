@@ -23,13 +23,22 @@ class ProductViewModel @Inject constructor(private val getproduct : ProductUseCa
     private val limit = 10
     private var isPaginationExhausted = false
     private var isLoadingMore = false
+    private var isRefreshing = false
     private val productsList = mutableListOf<getProducts>()
 
+    init {
+        getFirstProduct()
+    }
+
     fun getFirstProduct(){
+        if (isRefreshing) return
+
         currentOffset = 0
         isPaginationExhausted = false
+        isLoadingMore = false
         productsList.clear()
-        
+        isRefreshing = true
+
         viewModelScope.launch {
             _productstate.value = ProductUiState.Loading
             try {
@@ -43,6 +52,8 @@ class ProductViewModel @Inject constructor(private val getproduct : ProductUseCa
             } catch (e: Exception) {
                 Log.d("ProductError", e.message.toString())
                 _productstate.value = ProductUiState.Error(e.toUiError())
+            } finally {
+                isRefreshing = false
             }
         }
     }
