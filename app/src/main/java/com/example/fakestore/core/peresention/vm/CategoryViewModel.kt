@@ -20,7 +20,13 @@ class CategoryViewModel @Inject constructor(
     private val _categoryState = MutableStateFlow<CategoryUiState>(CategoryUiState.Idle)
     val categoryState: StateFlow<CategoryUiState> = _categoryState
 
+    init {
+        getAllCategories()
+    }
+
     fun getAllCategories() {
+        if (_categoryState.value is CategoryUiState.Loading) return
+
         viewModelScope.launch {
             _categoryState.value = CategoryUiState.Loading
             try {

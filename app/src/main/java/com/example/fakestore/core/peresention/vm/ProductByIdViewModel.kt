@@ -1,10 +1,14 @@
 package com.example.fakestore.core.peresention.vm
 
 import android.util.Log
+import android.util.Log.e
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fakestore.core.domain.usecases.ProductByIdUseCaase
 import com.example.fakestore.core.peresention.uistate.ProductByIdUiState
+import com.example.fakestore.core.peresention.uistate.UiError
+
 import com.example.fakestore.core.peresention.util.toUiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +21,11 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductByIdViewModel @Inject constructor(
     private val getProductByIdUseCase: ProductByIdUseCaase
+
 ) : ViewModel() {
 
     private val _productByIdState = MutableStateFlow<ProductByIdUiState>(ProductByIdUiState.Idle)
     val productByIdState: StateFlow<ProductByIdUiState> = _productByIdState
-
 
 
     fun getProductById(id: Int) {
