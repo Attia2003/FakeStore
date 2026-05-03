@@ -41,6 +41,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.example.fakestore.core.data.local.db.CartItemEntity
+import com.example.fakestore.core.peresention.screens.component.HoldToConfirmButton
 import com.example.fakestore.core.peresention.uistate.CartUiState
 import com.example.fakestore.core.peresention.vm.CartViewModel
 
@@ -67,6 +71,7 @@ fun CartScreen(
     onGoShopping: () -> Unit = {}
 ) {
     val state by vm.cartState.collectAsState()
+    var isOrderPlaced by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -98,71 +103,89 @@ fun CartScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        when (val uiState = state) {
-            is CartUiState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            }
+        if (isOrderPlaced) {
 
-            is CartUiState.Success -> {
-                AnimatedVisibility(
-                    visible = uiState.items.isEmpty(),
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    EmptyCartContent(
+            OrderSuccessScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                onTrackOrder = {
+
+                }
+            )
+        } else {
+            when (val uiState = state) {
+                is CartUiState.Loading -> {
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(paddingValues),
-                        onGoShopping = onGoShopping
-                    )
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
                 }
 
-                AnimatedVisibility(
-                    visible = uiState.items.isNotEmpty(),
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    CartContent(
-                        items = uiState.items,
+                is CartUiState.Success -> {
+                    AnimatedVisibility(
+                        visible = uiState.items.isEmpty(),
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        EmptyCartContent(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues),
+                            onGoShopping = onGoShopping
+                        )
+                    }
+
+                    AnimatedVisibility(
+                        visible = uiState.items.isNotEmpty(),
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        CartContent(
+                            items = uiState.items,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues),
+                            onIncrease = { item ->
+                                vm.increaseQuantity(item.productId, item.quantity)
+                            },
+                            onDecrease = { item ->
+                                vm.decreaseQuantity(item.productId, item.quantity, item.id)
+                            },
+                            onRemove = { item ->
+                                vm.removeItem(item.id)
+
+                            }, onCheckout = {
+                                isOrderPlaced = true
+
+                            }
+
+
+                        )
+                    }
+                }
+
+                is CartUiState.Error -> {
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(paddingValues),
-                        onIncrease = { item ->
-                            vm.increaseQuantity(item.productId, item.quantity)
-                        },
-                        onDecrease = { item ->
-                            vm.decreaseQuantity(item.productId, item.quantity, item.id)
-                        },
-                        onRemove = { item ->
-                            vm.removeItem(item.id)
-                        }
-                    )
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Something went wrong. Please try again.",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
-            }
 
-            is CartUiState.Error -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Something went wrong. Please try again.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                CartUiState.Idle -> {}
             }
-
-            CartUiState.Idle -> {}
         }
     }
 }
@@ -173,7 +196,9 @@ private fun CartContent(
     modifier: Modifier = Modifier,
     onIncrease: (CartItemEntity) -> Unit,
     onDecrease: (CartItemEntity) -> Unit,
-    onRemove: (CartItemEntity) -> Unit
+    onRemove: (CartItemEntity) -> Unit,
+    onCheckout: () -> Unit
+
 ) {
     val subtotal = items.sumOf { it.price * it.quantity }
     val total = subtotal + DeliveryFee
@@ -196,7 +221,8 @@ private fun CartContent(
                 item = item,
                 onIncrease = { onIncrease(item) },
                 onDecrease = { onDecrease(item) },
-                onRemove = { onRemove(item) }
+                onRemove = { onRemove(item) },
+
             )
         }
 
@@ -205,7 +231,8 @@ private fun CartContent(
             OrderSummaryCard(
                 subtotal = subtotal,
                 deliveryFee = DeliveryFee,
-                total = total
+                total = total,
+                onCheckout = onCheckout
             )
             Spacer(Modifier.height(24.dp))
         }
@@ -341,7 +368,8 @@ private fun QuantityControls(
 private fun OrderSummaryCard(
     subtotal: Double,
     deliveryFee: Double,
-    total: Double
+    total: Double,
+    onCheckout:()-> Unit
 ) {
     Card(
         modifier = Modifier
@@ -395,23 +423,12 @@ private fun OrderSummaryCard(
 
             Spacer(Modifier.height(4.dp))
 
-            Button(
-                onClick = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            ) {
-                Text(
-                    text = "Proceed to Checkout",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp
-                )
-            }
+            HoldToConfirmButton(
+                text = "Hold to Place Order",
+                successText = "Order Placed!",
+                onConfirm = onCheckout,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
