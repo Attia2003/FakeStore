@@ -14,7 +14,7 @@ data class getproductbyid(
 data class CategoryBYid(
     val  id: Int,
     val name :String,
-    val slug: String,
-    val image: String?=null,
+//    val slug: String,
+//    val image: String?=null,
 
 )

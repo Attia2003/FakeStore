@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -90,7 +91,10 @@ fun PasswordTextField(
             )
         },
         trailingIcon = {
-            IconButton(onClick = onPasswordVisibilityChange) {
+
+            IconButton(onClick = onPasswordVisibilityChange,
+                modifier = Modifier.testTag("password_visibility_toggle")) {
+
                 Icon(
                     imageVector = if (passwordVisible) Icons.Filled.VisibilityOff
                     else Icons.Filled.Visibility,

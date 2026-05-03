@@ -19,7 +19,7 @@ import com.example.fakestore.core.peresention.screens.LoginScreen
 import com.example.fakestore.core.peresention.screens.SignUpScreen
 import com.example.fakestore.core.peresention.screens.SplashScreen
 import com.example.fakestore.core.peresention.screens.component.CategoryByIdScreen
-import com.example.fakestore.core.peresention.screens.component.getProductById
+import com.example.fakestore.core.peresention.screens.component.ProductDetailsScreen
 import com.example.fakestore.core.peresention.vm.SessionViewModel
 import com.example.fakestore.ui.theme.FakeStoreTheme
 
@@ -120,7 +120,7 @@ fun AppNavGraph() {
                     arguments = listOf(navArgument("id") { type = NavType.IntType })
                 ) { entry ->
                     val id = entry.arguments?.getInt("id") ?: return@composable
-                    getProductById(
+                    ProductDetailsScreen(
                         id = id,
                         onNavigateBack = { navController.popBackStack() }
                     )

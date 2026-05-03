@@ -54,7 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
-import com.example.fakestore.core.data.dto.getProducts
+import com.example.fakestore.core.data.dto.getproductbyid
 import com.example.fakestore.core.peresention.uistate.CategoryByIdUiState
 import com.example.fakestore.core.peresention.uistate.UiError
 import com.example.fakestore.core.peresention.vm.CategoryByIdViewModel
@@ -227,7 +227,7 @@ fun CategoryByIdScreen(
 
 @Composable
 fun ProductGridCard(
-    product: getProducts,
+    product: getproductbyid,
     onClick: () -> Unit
 ) {
     Card(
