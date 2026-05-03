@@ -34,7 +34,7 @@ interface ApiService {
     suspend fun getAllCategories(): List<CategoryDto>
 
     @GET("categories/{id}/products")
-    suspend fun getProductsByCategory(@Path("id") id: Int): List<getProducts>
+    suspend fun getProductsByCategory(@Path("id") id: Int): List<getproductbyid>
 
     @POST("users/")
     suspend fun signUp(@Body request: SignUpRequest): SignUpResponse

@@ -42,8 +42,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.fakestore.ui.theme.FakeStoreTheme
 import com.example.fakestore.ui.theme.LightPrimary
 import kotlinx.coroutines.delay
 
@@ -229,5 +231,18 @@ fun SplashScreen(
                 Spacer(Modifier.height(16.dp))
             }
         }
+    }
+}
+@Preview(name = "Phone", device = "spec:width=411dp,height=891dp")
+@Preview(name = "Foldable", device = "spec:width=673.5dp,height=841dp,dpi=480")
+@Preview(name = "Tablet", device = "spec:width=1280dp,height=800dp,dpi=240")
+@Composable
+fun SplashScreenPreview() {
+
+    FakeStoreTheme {
+        SplashScreen(
+            isLoggedIn = false,
+            onNavigate = {}
+        )
     }
 }

@@ -22,6 +22,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -29,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fakestore.core.peresention.components.*
 import com.example.fakestore.core.peresention.uistate.LoginUiState
 import com.example.fakestore.core.peresention.vm.LoginViewModel
@@ -50,8 +52,6 @@ fun LoginScreen(
     val passwordVisible by viewModel.passwordVisible.collectAsState()
 
     val context = LocalContext.current
-    val focusManager = LocalFocusManager.current
-
 
     LaunchedEffect(uiState) {
         when (val state = uiState) {
@@ -64,6 +64,7 @@ fun LoginScreen(
                 viewModel.resetState()
                 onLoginSuccess()
             }
+
             is LoginUiState.Error -> {
                 Toast.makeText(
                     context,
@@ -72,10 +73,42 @@ fun LoginScreen(
                 ).show()
                 viewModel.resetState()
             }
+
             else -> {}
         }
     }
+    LoginScreenContent(
+        email = email,
+        password = password,
+        emailError = emailError,
+        passwordError = passwordError,
+        passwordVisible = passwordVisible,
+        uiState = uiState,
+        onEmailChange = viewModel::onEmailChange,
+        onPasswordChange = viewModel::onPasswordChange,
+        onPasswordVisibilityToggle = viewModel::onPasswordVisibilityToggle,
+        onLoginClick = viewModel::onLoginClick,
+        onNavigateToSignUp = onNavigateToSignUp
+    )
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoginScreenContent(
+    email: String,
+    password: String,
+    emailError: String?,
+    passwordError: String?,
+    passwordVisible: Boolean,
+    uiState: LoginUiState,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onPasswordVisibilityToggle: () -> Unit,
+    onLoginClick: () -> Unit,
+    onNavigateToSignUp: () -> Unit
+) {
+
+    val focusManager = LocalFocusManager.current
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -107,8 +140,9 @@ fun LoginScreen(
 
 
             AuthTextField(
+                modifier = Modifier.testTag("email_input"),
                 value = email,
-                onValueChange = viewModel::onEmailChange,
+                onValueChange = onEmailChange,
                 label = "Email",
                 placeholder = "Enter your email",
                 leadingIcon = Icons.Default.Email,
@@ -124,18 +158,19 @@ fun LoginScreen(
 
 
             PasswordTextField(
+                modifier = Modifier.testTag("password_input"),
                 value = password,
-                onValueChange = viewModel::onPasswordChange,
+                onValueChange =onPasswordChange ,
                 label = "Password",
                 placeholder = "Enter your password",
                 passwordVisible = passwordVisible,
-                onPasswordVisibilityChange = { viewModel.onPasswordVisibilityToggle() },
+                onPasswordVisibilityChange = onPasswordVisibilityToggle,
                 errorMessage = passwordError,
                 imeAction = ImeAction.Done,
                 keyboardActions = KeyboardActions(
-                    onDone = { 
+                    onDone = {
                         focusManager.clearFocus()
-                        viewModel.onLoginClick()
+                        onLoginClick()
                     }
                 )
             )
@@ -169,10 +204,11 @@ fun LoginScreen(
 
 
             AuthButton(
+                modifier = Modifier.testTag("login_button"),
                 text = "Login",
-                onClick = { 
+                onClick = {
                     focusManager.clearFocus()
-                    viewModel.onLoginClick() 
+                    onLoginClick()
                 },
                 isLoading = uiState is LoginUiState.Loading
             )
@@ -203,4 +239,6 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(48.dp))
         }
     }
+
+
 }
