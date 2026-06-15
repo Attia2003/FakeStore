@@ -76,6 +76,7 @@ fun HoldToConfirmButton(
     val fillWidthPx = buttonWidthPx * fillFraction
 
     Box(
+
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)

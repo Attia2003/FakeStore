@@ -41,12 +41,14 @@ import com.example.fakestore.core.peresention.screens.component.HorizontalCardPr
 import com.example.fakestore.core.peresention.screens.component.HorizontalCategoryList
 import com.example.fakestore.core.peresention.uistate.ProductUiState
 import com.example.fakestore.core.peresention.uistate.UiError
+import com.example.fakestore.core.peresention.vm.CartViewModel
 import com.example.fakestore.core.peresention.vm.CategoryViewModel
 import com.example.fakestore.core.peresention.vm.ProductViewModel
 
 @Composable
 fun HomeScreen(
     vm: ProductViewModel = hiltViewModel(),
+    cartVm: CartViewModel = hiltViewModel(),
     categoryVm: CategoryViewModel = hiltViewModel(),
     onProductClick: (getProducts) -> Unit = {},
     onAddProductClick: () -> Unit = {},
@@ -105,9 +107,10 @@ fun HomeScreen(
             
             item {
                 Text(
-                    text = "Recommended Product",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    text = "Recommended Products",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
                 Spacer(Modifier.height(16.dp))
             }
@@ -168,7 +171,15 @@ fun HomeScreen(
                                         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                                             HorizontalCardProduct(
                                                 product = product,
-                                                onClick = { onProductClick(product) }
+                                                onClick = { onProductClick(product) },
+                                                onAddToCartClick = { selectedProduct ->
+                                                    cartVm.addToCart(
+                                                        productId = selectedProduct.id,
+                                                        title = selectedProduct.title.orEmpty(),
+                                                        price = selectedProduct.price.toDouble(),
+                                                        imageUrl = selectedProduct.images?.firstOrNull().orEmpty()
+                                                    )
+                                                }
                                             )
                                         }
                                     }

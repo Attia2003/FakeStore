@@ -1,16 +1,11 @@
 package com.example.fakestore.core.peresention.screens.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,49 +35,45 @@ fun MainScaffold(
     val shouldShowBottomBar = currentDestination?.route !in routesWithoutBottomBar
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             if (shouldShowBottomBar) {
-                BottomAppBar(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentColor = MaterialTheme.colorScheme.onSurface,
-                    tonalElevation = 8.dp
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    tonalElevation = 0.dp
                 ) {
-                    NavigationBar(
-                        containerColor = Color.Transparent,
-                        contentColor = MaterialTheme.colorScheme.onSurface,
-                        tonalElevation = 0.dp
-                    ) {
-                        bottomNavItems.forEach { item ->
-                            val isSelected = currentDestination?.hierarchy?.any {
-                                it.route == item.screen.route
-                            } == true
+                    bottomNavItems.forEach { item ->
+                        val isSelected = currentDestination?.hierarchy?.any {
+                            it.route == item.screen.route
+                        } == true
 
-                            NavigationBarItem(
-                                icon = {
-                                    Icon(
-                                        imageVector = item.icon,
-                                        contentDescription = item.title
-                                    )
-                                },
-                                label = { Text(item.title) },
-                                selected = isSelected,
-                                colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                                    unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                    unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                ),
-                                onClick = {
-                                    navController.navigate(item.screen.route) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
+                        NavigationBarItem(
+                            icon = {
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.title
+                                )
+                            },
+                            label = { Text(item.title) },
+                            selected = isSelected,
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = Color(0xFF4285F4),
+                                selectedTextColor = Color(0xFF4285F4),
+                                unselectedIconColor = Color(0xFF8C9AB5),
+                                unselectedTextColor = Color(0xFF8C9AB5),
+                                indicatorColor = Color.Transparent
+                            ),
+                            onClick = {
+                                navController.navigate(item.screen.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
                                     }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                            )
-                        }
+                            }
+                        )
                     }
                 }
             }

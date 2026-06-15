@@ -33,7 +33,7 @@ fun CategoryCard(
             .width(150.dp)
             .height(100.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(

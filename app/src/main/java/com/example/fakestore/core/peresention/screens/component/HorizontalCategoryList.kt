@@ -26,8 +26,9 @@ fun HorizontalCategoryList(
 
         Text(
             text = "Categories",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
         // Category List
