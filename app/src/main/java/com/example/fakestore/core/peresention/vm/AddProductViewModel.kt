@@ -8,8 +8,10 @@ import com.example.fakestore.core.domain.usecases.AddProductUseCase
 import com.example.fakestore.core.peresention.uistate.AddProductUiState
 import com.example.fakestore.core.peresention.util.toUiError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,23 +22,21 @@ class AddProductViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<AddProductUiState>(AddProductUiState.Idle)
     val uiState: StateFlow<AddProductUiState> = _uiState
+    private val _events = Channel<AddProductUiState>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
 
     fun createProduct(
-        title: String,
-        price: Long,
-        description: String,
-        categoryId: Int,
-        images: List<String>
+       form : CreateProductRequest
     ) {
         viewModelScope.launch {
             _uiState.value = AddProductUiState.Loading
             try {
                 val request = CreateProductRequest(
-                    title = title,
-                    price = price,
-                    description = description,
-                    categoryId = categoryId,
-                    images = images
+                    title = form.title,
+                    price = form.price,
+                    description =form. description,
+                    categoryId = form.categoryId,
+                    images = form.images
                 )
                 val response = addProductUseCase.call(request)
                 _uiState.value = AddProductUiState.Success(response)
@@ -48,7 +48,4 @@ class AddProductViewModel @Inject constructor(
         }
     }
 
-    fun resetState() {
-        _uiState.value = AddProductUiState.Idle
-    }
 }

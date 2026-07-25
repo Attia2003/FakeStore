@@ -2,7 +2,7 @@ package com.example.fakestore.core.data.dto
 
 data class CreateProductRequest(
     val title: String,
-    val price: Long,
+    val price: Double,
     val description: String,
     val categoryId: Int,
     val images: List<String>

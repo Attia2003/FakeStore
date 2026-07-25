@@ -20,19 +20,17 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun MainScaffold(
-    navController: NavHostController,
+    currentRoute: String?,
+    onNavigate: (String) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-
     val routesWithoutBottomBar = listOf(
         Screen.Login.route,
         Screen.SignUp.route,
         Screen.Splash.route
     )
 
-    val shouldShowBottomBar = currentDestination?.route !in routesWithoutBottomBar
+    val shouldShowBottomBar = currentRoute !in routesWithoutBottomBar
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -44,9 +42,8 @@ fun MainScaffold(
                     tonalElevation = 0.dp
                 ) {
                     bottomNavItems.forEach { item ->
-                        val isSelected = currentDestination?.hierarchy?.any {
-                            it.route == item.screen.route
-                        } == true
+
+                        val isSelected = currentRoute == item.screen.route
 
                         NavigationBarItem(
                             icon = {
@@ -65,13 +62,7 @@ fun MainScaffold(
                                 indicatorColor = Color.Transparent
                             ),
                             onClick = {
-                                navController.navigate(item.screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
+                                onNavigate(item.screen.route)
                             }
                         )
                     }

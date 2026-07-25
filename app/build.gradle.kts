@@ -47,12 +47,27 @@ android {
         compose = true
         buildConfig = true
     }
+    val composeReports = layout.buildDirectory.dir("compose_reports")
+    val composeMetrics = layout.buildDirectory.dir("compose_metrics")
 
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        // 1. Get the absolute file path string safely
+        val buildDirPath = layout.buildDirectory.get().asFile.absolutePath
 
+        // 2. Append the specific folder names to that path
+        compilerOptions.freeCompilerArgs.addAll(
+            "-P", "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$buildDirPath/compose_reports",
+            "-P", "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$buildDirPath/compose_metrics"
+        )
+    }
 
 }
 
 dependencies {
+
+    // build.gradle.kts
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7")
+
     implementation("com.google.errorprone:error_prone_annotations:2.22.0")
 
     // SQLCipher — AES-256 encryption

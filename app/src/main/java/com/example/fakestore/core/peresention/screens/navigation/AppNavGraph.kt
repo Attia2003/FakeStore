@@ -6,13 +6,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.fakestore.core.peresention.screens.AccountScreen
 import com.example.fakestore.core.peresention.screens.AddProductScreen
+import com.example.fakestore.core.peresention.screens.AddProductScreenRoute
+import com.example.fakestore.core.peresention.screens.CartConterntRoute
 import com.example.fakestore.core.peresention.screens.CartScreen
 import com.example.fakestore.core.peresention.screens.HomeScreen
 import com.example.fakestore.core.peresention.screens.LoginScreen
@@ -26,13 +30,28 @@ import com.example.fakestore.ui.theme.FakeStoreTheme
 
 @Composable
 fun AppNavGraph() {
+
     FakeStoreTheme {
         val navController = rememberNavController()
 
         val sessionViewModel: SessionViewModel = hiltViewModel()
         val isLoggedIn by sessionViewModel.isLoggedIn.collectAsStateWithLifecycle()
 
-        MainScaffold(navController = navController) { paddingValues ->
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        MainScaffold(
+            currentRoute = currentRoute,
+            onNavigate = { route ->
+                navController.navigate(route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        ) { paddingValues ->
             NavHost(
                 navController = navController,
                 startDestination = Screen.Splash.route,
@@ -66,16 +85,16 @@ fun AppNavGraph() {
                 }
 
                 composable(Screen.AddProduct.route) {
-                    AddProductScreen(
-                        onProductCreated = {
+                    AddProductScreenRoute(
+                        onNavigateBack = {
                             navController.popBackStack()
                         }
                     )
                 }
 
                 composable(Screen.Cart.route) {
-                    CartScreen(
-                        onGoShopping = {
+                    CartConterntRoute(
+                        onNavigateShopping = {
                             navController.navigate(Screen.Home.route) {
                                 popUpTo(Screen.Home.route) { inclusive = false }
                             }
