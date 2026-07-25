@@ -10,8 +10,11 @@ import com.example.fakestore.core.domain.usecases.RemoveFromCartUseCase
 import com.example.fakestore.core.domain.usecases.UpdateCartQuantityUseCase
 import com.example.fakestore.core.peresention.uistate.CartUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,8 +33,9 @@ class CartViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             clearExpired.call()
-            getCartItems.call().collect { items ->
-                _cartState.value = CartUiState.Success(items)
+            getCartItems.call()
+                .collect { items ->
+                    _cartState.value = CartUiState.Success(items.toImmutableList())
             }
         }
     }

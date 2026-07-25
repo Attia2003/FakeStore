@@ -57,24 +57,29 @@ fun HomeScreen(
     val state by vm.productstate.collectAsState()
     val categoryState by categoryVm.categoryState.collectAsState()
     val listState = rememberLazyListState()
-    
+
+    val rows = remember(state) {
+        (state as? ProductUiState.Success)?.products?.chunked(2) ?: emptyList()
+    }
+
 
     var isFabVisible by remember { mutableStateOf(true) }
     val previousScrollOffset = remember { mutableStateOf(0) }
-    
 
-    LaunchedEffect(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) {
-        val currentScrollOffset = listState.firstVisibleItemIndex * 1000 + listState.firstVisibleItemScrollOffset
-        
-        if (currentScrollOffset > previousScrollOffset.value && currentScrollOffset > 50) {
 
-            isFabVisible = false
-        } else if (currentScrollOffset < previousScrollOffset.value) {
-
-            isFabVisible = true
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            listState.firstVisibleItemIndex * 1000 + listState.firstVisibleItemScrollOffset
         }
-        
-        previousScrollOffset.value = currentScrollOffset
+            .collect { currentScrollOffset ->
+                val previous = previousScrollOffset.value
+                isFabVisible = when {
+                    currentScrollOffset > previous && currentScrollOffset > 50 -> false
+                    currentScrollOffset < previous -> true
+                    else -> isFabVisible
+                }
+                previousScrollOffset.value = currentScrollOffset
+            }
     }
 
     LaunchedEffect(listState) {
@@ -157,10 +162,9 @@ fun HomeScreen(
                     }
 
                     is ProductUiState.Success -> {
-                        val products = isstate.products
-                        val rows = products.chunked(2)
                         rows.forEachIndexed { index, rowProducts ->
-                            item(key = "row_$index") {
+                            item(key = rowProducts.joinToString("_")
+                            { it.id.toString() }) {
                                 androidx.compose.foundation.layout.Row(
                                     modifier = Modifier
                                         .fillMaxWidth()

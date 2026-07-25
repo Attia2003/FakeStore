@@ -31,7 +31,7 @@ fun HorizontalCategoryList(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
-        // Category List
+
         when (categoryState) {
             CategoryUiState.Idle -> {
 

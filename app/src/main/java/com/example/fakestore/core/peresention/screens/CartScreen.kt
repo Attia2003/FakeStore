@@ -39,10 +39,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,51 +55,44 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.example.fakestore.core.data.local.db.CartItemEntity
 import com.example.fakestore.core.peresention.screens.component.HoldToConfirmButton
+import com.example.fakestore.core.peresention.uistate.CartEvent
 import com.example.fakestore.core.peresention.uistate.CartUiState
 import com.example.fakestore.core.peresention.vm.CartViewModel
+import kotlinx.collections.immutable.ImmutableList
 
 private val DeliveryFee = 5.99
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(
-    vm: CartViewModel = hiltViewModel(),
-    onGoShopping: () -> Unit = {}
+    state: CartUiState,
+    onEvent: (CartEvent) -> Unit
+
 ) {
-    val state by vm.cartState.collectAsState()
-    var isOrderPlaced by remember { mutableStateOf(false) }
+
+    var isOrderPlaced by rememberSaveable  { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "My Cart",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = Color.White
-                        )
-                        if (state is CartUiState.Success) {
-                            val count = (state as CartUiState.Success).items.size
-                            if (count > 0) {
-                                Spacer(Modifier.width(10.dp))
-                            }
-                        }
-                    }
+                    Text(
+                        text = "My Cart",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = Color.White
+                    )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                 modifier = Modifier.background(
-                    Brush.linearGradient(listOf(MaterialTheme.colorScheme.background,
-                        MaterialTheme.colorScheme.primaryContainer))
+                    Brush.linearGradient(listOf(MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.primaryContainer))
                 )
             )
         },
@@ -136,7 +131,9 @@ fun CartScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(paddingValues),
-                            onGoShopping = onGoShopping
+                                onGoShopping =  {onEvent(CartEvent.GoShopping)}
+
+
                         )
                     }
 
@@ -151,17 +148,17 @@ fun CartScreen(
                                 .fillMaxSize()
                                 .padding(paddingValues),
                             onIncrease = { item ->
-                                vm.increaseQuantity(item.productId, item.quantity)
+                                onEvent(CartEvent.IncreaseQuantity(item))
                             },
                             onDecrease = { item ->
-                                vm.decreaseQuantity(item.productId, item.quantity, item.id)
+                                onEvent(CartEvent.DecreaseQuantity(item))
                             },
                             onRemove = { item ->
-                                vm.removeItem(item.id)
+                                onEvent(CartEvent.RemoveItem(item))
 
                             }, onCheckout = {
                                 isOrderPlaced = true
-
+                                onEvent(CartEvent.Checkout)
                             }
 
 
@@ -192,7 +189,7 @@ fun CartScreen(
 
 @Composable
 private fun CartContent(
-    items: List<CartItemEntity>,
+    items: ImmutableList<CartItemEntity>,
     modifier: Modifier = Modifier,
     onIncrease: (CartItemEntity) -> Unit,
     onDecrease: (CartItemEntity) -> Unit,
@@ -200,7 +197,7 @@ private fun CartContent(
     onCheckout: () -> Unit
 
 ) {
-    val subtotal = items.sumOf { it.price * it.quantity }
+    val subtotal = remember(items) { items.sumOf { it.price * it.quantity } }
     val total = subtotal + DeliveryFee
 
     LazyColumn(
@@ -520,4 +517,33 @@ private fun EmptyCartContent(
     }
 }
 
+
+@Composable
+fun CartConterntRoute(
+    vm: CartViewModel= hiltViewModel(),
+    onNavigateShopping: () -> Unit
+){
+    val state by vm.cartState.collectAsState()
+    CartScreen(
+        state=state,
+        onEvent = { event ->
+            when (event) {
+                is CartEvent.IncreaseQuantity -> vm.increaseQuantity(
+                    event.item.productId,
+                    event.item.quantity
+                )
+
+                is CartEvent.DecreaseQuantity -> vm.decreaseQuantity(
+                    event.item.productId,
+                    event.item.quantity,
+                    event.item.id
+                )
+
+                is CartEvent.RemoveItem -> vm.removeItem(event.item.id)
+                is CartEvent.Checkout -> {}
+                is CartEvent.GoShopping -> onNavigateShopping()
+                   }
+                }
+            )
+    }
 

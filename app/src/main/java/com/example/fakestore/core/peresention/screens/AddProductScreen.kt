@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.fakestore.core.data.dto.CreateProductRequest
 import com.example.fakestore.core.peresention.uistate.AddProductUiState
 import com.example.fakestore.core.peresention.uistate.UiError
 import com.example.fakestore.core.peresention.vm.AddProductViewModel
@@ -23,11 +24,10 @@ import com.example.fakestore.core.peresention.vm.AddProductViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddProductScreen(
-    viewModel: AddProductViewModel = hiltViewModel(),
-    onProductCreated: () -> Unit = {}
+    uiState: AddProductUiState,
+    onCloseClick: () -> Unit,
+    onCreateProductClick: (CreateProductRequest) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
 
     var title by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
@@ -40,38 +40,14 @@ fun AddProductScreen(
     var descriptionError by remember { mutableStateOf(false) }
 
 
-    LaunchedEffect(uiState) {
-        when (val state = uiState) {
-            is AddProductUiState.Success -> {
-                Toast.makeText(
-                    context,
-                    "Product created successfully!",
-                    Toast.LENGTH_SHORT
-                ).show()
-                viewModel.resetState()
-                onProductCreated()
-            }
-            is AddProductUiState.Error -> {
-                val message = when (state.error) {
-                    UiError.NoInternet -> "No internet connection"
-                    is UiError.Http -> "Server error: ${state.error.code}"
-                    UiError.Unknown -> "An error occurred"
-                    else -> ""
-                }
 
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                viewModel.resetState()
-            }
-            else -> {}
-        }
-    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Add New Product") },
                 navigationIcon = {
-                    IconButton(onClick = onProductCreated) {
+                    IconButton(onClick = onCloseClick) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close"
@@ -190,13 +166,14 @@ fun AddProductScreen(
                             } else {
                                 listOf("https://placeimg.com/640/480/any")
                             }
-
-                            viewModel.createProduct(
+                            onCreateProductClick(
+                            CreateProductRequest(
                                 title = title,
-                                price = price.toLong(),
+                                price = price.toDoubleOrNull() ?: 0.0,
                                 description = description,
                                 categoryId = categoryId.toIntOrNull() ?: 1,
                                 images = images
+                                 )
                             )
                         }
                     },
@@ -224,4 +201,44 @@ fun AddProductScreen(
             }
         }
     }
+}
+
+@Composable
+fun AddProductScreenRoute(
+    viewModel: AddProductViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is AddProductUiState.Success -> {
+                    Toast.makeText(context, "Product created successfully!", Toast.LENGTH_SHORT).show()
+                    onNavigateBack()
+                }
+                is AddProductUiState.Error -> {
+                    val message = when (event.error) {
+                        UiError.NoInternet -> "No internet connection"
+                        is UiError.Http -> "Server error: ${event.error.code}"
+                        UiError.Unknown -> "An error occurred"
+                        else -> "Unknown Error"
+                    }
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    AddProductScreen(
+        uiState = uiState,
+        onCloseClick = onNavigateBack,
+        onCreateProductClick = { form ->
+            viewModel.createProduct(form)
+        }
+    )
+
 }
