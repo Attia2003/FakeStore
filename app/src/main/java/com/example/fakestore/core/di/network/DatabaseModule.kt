@@ -16,27 +16,26 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
     @Provides
     @Singleton
     fun provideDatabasePassphrase(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): DatabasePassphrase = DatabasePassphrase(context)
 
     @Provides
     @Singleton
     fun provideAppDatabase(
         @ApplicationContext context: Context,
-        passphrase: DatabasePassphrase
+        passphrase: DatabasePassphrase,
     ): AppDatabase {
         val factory = SupportFactory(passphrase.getPassphrase())
 
-        return Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "fakestore_db"
-        )
-            .openHelperFactory(factory)
+        return Room
+            .databaseBuilder(
+                context,
+                AppDatabase::class.java,
+                "fakestore_db",
+            ).openHelperFactory(factory)
             .fallbackToDestructiveMigration()
             .build()
     }

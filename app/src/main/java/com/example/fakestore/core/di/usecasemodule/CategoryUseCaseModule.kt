@@ -10,8 +10,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object CategoryUseCaseModule {
-    
     @Provides
-    fun provideCategoryUseCase(repo: CategoryRepository): CategoryUseCase =
-        CategoryUseCase(repo)
+    fun provideCategoryUseCase(repo: CategoryRepository): CategoryUseCase = CategoryUseCase(repo)
 }

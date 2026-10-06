@@ -7,7 +7,11 @@ sealed class CategoryUiState {
 
     object Loading : CategoryUiState()
 
-    data class Success(val categories: List<CategoryDto>) : CategoryUiState()
+    data class Success(
+        val categories: List<CategoryDto>,
+    ) : CategoryUiState()
 
-    data class Error(val error: UiError) : CategoryUiState()
+    data class Error(
+        val error: UiError,
+    ) : CategoryUiState()
 }

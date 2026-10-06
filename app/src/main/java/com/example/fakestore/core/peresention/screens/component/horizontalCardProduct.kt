@@ -44,24 +44,26 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun HorizontalCardProduct(
+fun horizontalCardProduct(
     product: getProducts,
     onClick: () -> Unit,
     onAddToCartClick: (getProducts) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val imageUrl = product.images?.firstOrNull()
 
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        shape = MaterialTheme.shapes.medium
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+            ),
+        shape = MaterialTheme.shapes.medium,
     ) {
         Column {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -69,24 +71,27 @@ fun HorizontalCardProduct(
                     AsyncImage(
                         model = imageUrl,
                         contentDescription = product.title,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f),
-                        contentScale = ContentScale.Crop
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f),
+                        contentScale = ContentScale.Crop,
                     )
                 } else {
                     Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f),
                     )
                 }
-                
-                AddToCartPlusButton(
+
+                addToCartPlusButton(
                     onAddToCart = { onAddToCartClick(product) },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(8.dp)
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(8.dp),
                 )
             }
 
@@ -97,7 +102,7 @@ fun HorizontalCardProduct(
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
 
                 Spacer(Modifier.height(4.dp))
@@ -107,7 +112,7 @@ fun HorizontalCardProduct(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
 
                 Spacer(Modifier.height(8.dp))
@@ -116,7 +121,7 @@ fun HorizontalCardProduct(
                     text = "EGP ${product.price}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -124,9 +129,9 @@ fun HorizontalCardProduct(
 }
 
 @Composable
-fun AddToCartPlusButton(
+fun addToCartPlusButton(
     onAddToCart: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
     var isAdded by remember { mutableStateOf(false) }
@@ -135,7 +140,7 @@ fun AddToCartPlusButton(
     val backgroundColor by animateColorAsState(
         targetValue = if (isAdded) Color(0xFF4285F4) else Color(0xFF4285F4),
         animationSpec = tween(durationMillis = 220),
-        label = "add_to_cart_button_color"
+        label = "add_to_cart_button_color",
     )
 
     IconButton(
@@ -144,27 +149,29 @@ fun AddToCartPlusButton(
             isAdded = true
 
             resetJob?.cancel()
-            resetJob = scope.launch {
-                delay(900)
-                isAdded = false
-            }
+            resetJob =
+                scope.launch {
+                    delay(900)
+                    isAdded = false
+                }
         },
-        modifier = modifier
-            .size(30.dp)
-            .clip(CircleShape)
-            .padding(8.dp)
-            .background(backgroundColor)
+        modifier =
+            modifier
+                .size(30.dp)
+                .clip(CircleShape)
+                .padding(8.dp)
+                .background(backgroundColor),
     ) {
         Box(contentAlignment = Alignment.Center) {
             AnimatedContent(
                 targetState = isAdded,
-                label = "add_to_cart_icon_state"
+                label = "add_to_cart_icon_state",
             ) { added ->
                 Icon(
                     imageVector = if (added) Icons.Default.Check else Icons.Default.Add,
                     contentDescription = if (added) "Added to cart" else "Add to cart",
                     tint = Color.White,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(18.dp),
                 )
             }
         }

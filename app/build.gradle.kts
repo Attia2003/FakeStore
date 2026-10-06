@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
+    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {
@@ -28,7 +29,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
         debug {
@@ -52,19 +53,24 @@ android {
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         // 1. Get the absolute file path string safely
-        val buildDirPath = layout.buildDirectory.get().asFile.absolutePath
+        val buildDirPath =
+            layout.buildDirectory
+                .get()
+                .asFile.absolutePath
 
         // 2. Append the specific folder names to that path
         compilerOptions.freeCompilerArgs.addAll(
-            "-P", "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$buildDirPath/compose_reports",
-            "-P", "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$buildDirPath/compose_metrics"
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$buildDirPath/compose_reports",
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$buildDirPath/compose_metrics",
         )
     }
-
 }
 
 dependencies {
 
+    implementation(libs.androidx.material3)
     // build.gradle.kts
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7")
 
@@ -74,37 +80,34 @@ dependencies {
     implementation("net.zetetic:android-database-sqlcipher:4.5.4")
     implementation("androidx.sqlite:sqlite-ktx:2.4.0")
 
-    //coli image
+    // coli image
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
-    //hilt
+    // hilt
     implementation("com.google.dagger:hilt-android:2.54")
     ksp("com.google.dagger:hilt-compiler:2.54")
-
 
     //  Compose + ViewModel
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-    //retrofit
-    implementation ("com.google.code.gson:gson:2.9.1")
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    // retrofit
+    implementation("com.google.code.gson:gson:2.9.1")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-    //okhttplog
+    // okhttplog
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Encrypted SharedPreferences
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
-    //coroutiens
+    // coroutiens
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 
     // Room
     implementation("androidx.room:room-runtime:2.7.0")
     implementation("androidx.room:room-ktx:2.7.0")
     ksp("androidx.room:room-compiler:2.7.0")
-
-
 
     implementation("androidx.compose.material:material-icons-extended")
 
@@ -127,5 +130,4 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-
 }

@@ -6,10 +6,10 @@ import com.example.fakestore.core.data.remote.ApiService
 import com.example.fakestore.core.domain.contract.SignUpRepository
 import javax.inject.Inject
 
-class SignUpRepoImpl @Inject constructor(
-    private val api: ApiService
-) : SignUpRepository {
-    override suspend fun signUp(request: SignUpRequest): SignUpResponse {
-        return api.signUp(request)
+class SignUpRepoImpl
+    @Inject
+    constructor(
+        private val api: ApiService,
+    ) : SignUpRepository {
+        override suspend fun signUp(request: SignUpRequest): SignUpResponse = api.signUp(request)
     }
-}

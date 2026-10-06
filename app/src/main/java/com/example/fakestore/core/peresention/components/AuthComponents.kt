@@ -1,6 +1,14 @@
 package com.example.fakestore.core.peresention.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -8,7 +16,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,9 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fakestore.core.peresention.uistate.UiError
 
-
 @Composable
-fun AuthTextField(
+fun authTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -35,7 +52,7 @@ fun AuthTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
         value = value,
@@ -45,29 +62,30 @@ fun AuthTextField(
         leadingIcon = {
             Icon(
                 imageVector = leadingIcon,
-                contentDescription = "$label Icon"
+                contentDescription = "$label Icon",
             )
         },
         isError = errorMessage != null,
         supportingText = errorMessage?.let { { Text(it) } },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType,
-            imeAction = imeAction
-        ),
+        keyboardOptions =
+            KeyboardOptions(
+                keyboardType = keyboardType,
+                imeAction = imeAction,
+            ),
         keyboardActions = keyboardActions,
         singleLine = true,
         shape = RoundedCornerShape(12.dp),
         modifier = modifier.fillMaxWidth(),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-        )
+        colors =
+            OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+            ),
     )
 }
 
-
 @Composable
-fun PasswordTextField(
+fun passwordTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -77,7 +95,7 @@ fun PasswordTextField(
     errorMessage: String? = null,
     imeAction: ImeAction = ImeAction.Done,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
         value = value,
@@ -87,151 +105,161 @@ fun PasswordTextField(
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Lock,
-                contentDescription = "$label Icon"
+                contentDescription = "$label Icon",
             )
         },
         trailingIcon = {
-
-            IconButton(onClick = onPasswordVisibilityChange,
-                modifier = Modifier.testTag("password_visibility_toggle")) {
-
+            IconButton(
+                onClick = onPasswordVisibilityChange,
+                modifier = Modifier.testTag("password_visibility_toggle"),
+            ) {
                 Icon(
-                    imageVector = if (passwordVisible) Icons.Filled.VisibilityOff
-                    else Icons.Filled.Visibility,
-                    contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    imageVector =
+                        if (passwordVisible) {
+                            Icons.Filled.VisibilityOff
+                        } else {
+                            Icons.Filled.Visibility
+                        },
+                    contentDescription = if (passwordVisible) "Hide password" else "Show password",
                 )
             }
         },
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         isError = errorMessage != null,
         supportingText = errorMessage?.let { { Text(it) } },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password,
-            imeAction = imeAction
-        ),
+        keyboardOptions =
+            KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = imeAction,
+            ),
         keyboardActions = keyboardActions,
         singleLine = true,
         shape = RoundedCornerShape(12.dp),
         modifier = modifier.fillMaxWidth(),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-        )
+        colors =
+            OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+            ),
     )
 }
 
-
 @Composable
-fun AuthHeader(
+fun authHeader(
     title: String,
     subtitle: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontWeight = FontWeight.Bold,
-                fontSize = 32.sp
-            ),
-            color = MaterialTheme.colorScheme.onBackground
+            style =
+                MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 32.sp,
+                ),
+            color = MaterialTheme.colorScheme.onBackground,
         )
 
         Text(
             text = subtitle,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(top = 8.dp),
         )
     }
 }
 
-
 @Composable
-fun AuthButton(
+fun authButton(
     text: String,
     onClick: () -> Unit,
     isLoading: Boolean,
     enabled: Boolean = true,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(56.dp),
         shape = RoundedCornerShape(12.dp),
         enabled = enabled && !isLoading,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        )
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
     ) {
         if (isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.size(24.dp),
                 color = MaterialTheme.colorScheme.onPrimary,
-                strokeWidth = 2.dp
+                strokeWidth = 2.dp,
             )
         } else {
             Text(
                 text = text,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold
-                )
+                style =
+                    MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                    ),
             )
         }
     }
 }
 
-
 @Composable
-fun ErrorCard(
+fun errorCard(
     errorMessage: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer
-        ),
-        shape = RoundedCornerShape(12.dp)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+            ),
+        shape = RoundedCornerShape(12.dp),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
             horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = Icons.Default.Lock,
                 contentDescription = "Error",
                 tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = errorMessage,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onErrorContainer
+                color = MaterialTheme.colorScheme.onErrorContainer,
             )
         }
     }
 }
 
-
-fun UiError.toMessage(): String = when (this) {
-    is UiError.NoInternet -> "No internet connection. Please check your network."
-    is UiError.InvalidCredentials -> "Incorrect email or password."
-    is UiError.UserNotFound -> "No account found with this email."
-    is UiError.BadRequest -> "Invalid input format."
-    is UiError.ServerError -> "Server error. Please try again later."
-    is UiError.Http -> "Request failed (Error $code)."
-    is UiError.Unknown -> "An unexpected error occurred."
-}
+fun UiError.toMessage(): String =
+    when (this) {
+        is UiError.NoInternet -> "No internet connection. Please check your network."
+        is UiError.InvalidCredentials -> "Incorrect email or password."
+        is UiError.UserNotFound -> "No account found with this email."
+        is UiError.BadRequest -> "Invalid input format."
+        is UiError.ServerError -> "Server error. Please try again later."
+        is UiError.Http -> "Request failed (Error $code)."
+        is UiError.Unknown -> "An unexpected error occurred."
+    }

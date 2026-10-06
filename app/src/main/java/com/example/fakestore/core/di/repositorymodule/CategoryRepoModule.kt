@@ -10,9 +10,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class CategoryRepoModule {
-
     @Binds
-    abstract fun bindCategoryRepository(
-        impl: CategoryRepoImpl
-    ): CategoryRepository
+    abstract fun bindCategoryRepository(impl: CategoryRepoImpl): CategoryRepository
 }

@@ -39,7 +39,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,13 +54,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.example.fakestore.core.data.local.db.CartItemEntity
-import com.example.fakestore.core.peresention.screens.component.HoldToConfirmButton
+import com.example.fakestore.core.peresention.screens.component.holdToConfirmButton
 import com.example.fakestore.core.peresention.uistate.CartEvent
 import com.example.fakestore.core.peresention.uistate.CartUiState
 import com.example.fakestore.core.peresention.vm.CartViewModel
@@ -71,13 +69,11 @@ private val DeliveryFee = 5.99
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartScreen(
+fun cartScreen(
     state: CartUiState,
-    onEvent: (CartEvent) -> Unit
-
+    onEvent: (CartEvent) -> Unit,
 ) {
-
-    var isOrderPlaced by rememberSaveable  { mutableStateOf(false) }
+    var isOrderPlaced by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -87,35 +83,36 @@ fun CartScreen(
                         text = "My Cart",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
-                        color = Color.White
+                        color = Color.White,
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-                modifier = Modifier.background(
-                    Brush.linearGradient(listOf(MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.primaryContainer))
-                )
+                modifier =
+                    Modifier.background(
+                        Brush.linearGradient(listOf(MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.primaryContainer)),
+                    ),
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
     ) { paddingValues ->
         if (isOrderPlaced) {
-
-            OrderSuccessScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+            orderSuccessScreen(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                 onTrackOrder = {
-
-                }
+                },
             )
         } else {
             when (val uiState = state) {
                 is CartUiState.Loading -> {
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues),
+                        contentAlignment = Alignment.Center,
                     ) {
                         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
@@ -125,28 +122,28 @@ fun CartScreen(
                     AnimatedVisibility(
                         visible = uiState.items.isEmpty(),
                         enter = fadeIn(),
-                        exit = fadeOut()
+                        exit = fadeOut(),
                     ) {
-                        EmptyCartContent(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues),
-                                onGoShopping =  {onEvent(CartEvent.GoShopping)}
-
-
+                        emptyCartContent(
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(paddingValues),
+                            onGoShopping = { onEvent(CartEvent.GoShopping) },
                         )
                     }
 
                     AnimatedVisibility(
                         visible = uiState.items.isNotEmpty(),
                         enter = fadeIn(),
-                        exit = fadeOut()
+                        exit = fadeOut(),
                     ) {
-                        CartContent(
+                        cartContent(
                             items = uiState.items,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues),
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(paddingValues),
                             onIncrease = { item ->
                                 onEvent(CartEvent.IncreaseQuantity(item))
                             },
@@ -155,28 +152,27 @@ fun CartScreen(
                             },
                             onRemove = { item ->
                                 onEvent(CartEvent.RemoveItem(item))
-
-                            }, onCheckout = {
+                            },
+                            onCheckout = {
                                 isOrderPlaced = true
                                 onEvent(CartEvent.Checkout)
-                            }
-
-
+                            },
                         )
                     }
                 }
 
                 is CartUiState.Error -> {
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues),
+                        contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             text = "Something went wrong. Please try again.",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
                         )
                     }
                 }
@@ -188,48 +184,46 @@ fun CartScreen(
 }
 
 @Composable
-private fun CartContent(
+private fun cartContent(
     items: ImmutableList<CartItemEntity>,
     modifier: Modifier = Modifier,
     onIncrease: (CartItemEntity) -> Unit,
     onDecrease: (CartItemEntity) -> Unit,
     onRemove: (CartItemEntity) -> Unit,
-    onCheckout: () -> Unit
-
+    onCheckout: () -> Unit,
 ) {
     val subtotal = remember(items) { items.sumOf { it.price * it.quantity } }
     val total = subtotal + DeliveryFee
 
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(0.dp)
+        verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
         item {
             Text(
                 text = "Curated Items",
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
             )
         }
 
         items(items, key = { it.id }) { item ->
-            CartItemRow(
+            cartItemRow(
                 item = item,
                 onIncrease = { onIncrease(item) },
                 onDecrease = { onDecrease(item) },
                 onRemove = { onRemove(item) },
-
             )
         }
 
         item {
             Spacer(Modifier.height(16.dp))
-            OrderSummaryCard(
+            qrderSummaryCard(
                 subtotal = subtotal,
                 deliveryFee = DeliveryFee,
                 total = total,
-                onCheckout = onCheckout
+                onCheckout = onCheckout,
             )
             Spacer(Modifier.height(24.dp))
         }
@@ -237,34 +231,37 @@ private fun CartContent(
 }
 
 @Composable
-private fun CartItemRow(
+private fun cartItemRow(
     item: CartItemEntity,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
-    onRemove: () -> Unit
+    onRemove: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 6.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
                 model = item.imageUrl,
                 contentDescription = item.title,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                modifier =
+                    Modifier
+                        .size(80.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
             )
 
             Spacer(Modifier.width(12.dp))
@@ -276,20 +273,20 @@ private fun CartItemRow(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = "EGP ${"%.2f".format(item.price)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 Spacer(Modifier.height(8.dp))
-                QuantityControls(
+                quantityControls(
                     quantity = item.quantity,
                     onIncrease = onIncrease,
-                    onDecrease = onDecrease
+                    onDecrease = onDecrease,
                 )
             }
 
@@ -298,7 +295,7 @@ private fun CartItemRow(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Remove",
                     tint = Color(0xFFBA1A1A),
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
                 )
             }
         }
@@ -306,29 +303,29 @@ private fun CartItemRow(
 }
 
 @Composable
-private fun QuantityControls(
+private fun quantityControls(
     quantity: Int,
     onIncrease: () -> Unit,
-    onDecrease: () -> Unit
+    onDecrease: () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(0.dp)
+        horizontalArrangement = Arrangement.spacedBy(0.dp),
     ) {
         Surface(
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceVariant,
-            modifier = Modifier.size(28.dp)
+            modifier = Modifier.size(28.dp),
         ) {
             IconButton(
                 onClick = onDecrease,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(28.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Remove,
                     contentDescription = "Decrease",
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(14.dp),
                 )
             }
         }
@@ -338,23 +335,23 @@ private fun QuantityControls(
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(horizontal = 12.dp)
+            modifier = Modifier.padding(horizontal = 12.dp),
         )
 
         Surface(
             shape = CircleShape,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(28.dp)
+            modifier = Modifier.size(28.dp),
         ) {
             IconButton(
                 onClick = onIncrease,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(28.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Increase",
                     tint = Color.White,
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(14.dp),
                 )
             }
         }
@@ -362,115 +359,121 @@ private fun QuantityControls(
 }
 
 @Composable
-private fun OrderSummaryCard(
+private fun qrderSummaryCard(
     subtotal: Double,
     deliveryFee: Double,
     total: Double,
-    onCheckout:()-> Unit
+    onCheckout: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
                 text = "Summary",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSecondary
-                                        )
+                color = MaterialTheme.colorScheme.onSecondary,
+            )
 
-            SummaryRow(label = "Subtotal", value = "EGP ${"%.2f".format(subtotal)}")
-            SummaryRow(label = "Delivery", value = "EGP ${"%.2f".format(deliveryFee)}")
+            summaryRow(label = "Subtotal", value = "EGP ${"%.2f".format(subtotal)}")
+            summaryRow(label = "Delivery", value = "EGP ${"%.2f".format(deliveryFee)}")
 
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(Color(0xFFC5C5D4).copy(alpha = 0.15f))
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(Color(0xFFC5C5D4).copy(alpha = 0.15f)),
             )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "Total",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondary
-                                        )
+                    color = MaterialTheme.colorScheme.onSecondary,
+                )
                 Text(
                     text = "EGP ${"%.2f".format(total)}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
 
             Spacer(Modifier.height(4.dp))
 
-            HoldToConfirmButton(
+            holdToConfirmButton(
                 text = "Hold to Place Order",
                 successText = "Order Placed!",
                 onConfirm = onCheckout,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
 }
 
 @Composable
-private fun SummaryRow(label: String, value: String) {
+private fun summaryRow(
+    label: String,
+    value: String,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
         )
     }
 }
 
 @Composable
-private fun EmptyCartContent(
+private fun emptyCartContent(
     modifier: Modifier = Modifier,
-    onGoShopping: () -> Unit
+    onGoShopping: () -> Unit,
 ) {
     Column(
         modifier = modifier.padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Surface(
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceVariant,
-            modifier = Modifier.size(100.dp)
+            modifier = Modifier.size(100.dp),
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.Default.ShoppingCart,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(48.dp),
                 )
             }
         }
@@ -482,7 +485,7 @@ private fun EmptyCartContent(
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
 
         Spacer(Modifier.height(10.dp))
@@ -492,7 +495,7 @@ private fun EmptyCartContent(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            lineHeight = 22.sp
+            lineHeight = 22.sp,
         )
 
         Spacer(Modifier.height(32.dp))
@@ -500,50 +503,52 @@ private fun EmptyCartContent(
         Button(
             onClick = onGoShopping,
             shape = RoundedCornerShape(14.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White,
+                ),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
         ) {
             Text(
                 text = "Start Shopping",
                 fontWeight = FontWeight.Bold,
-                fontSize = 15.sp
+                fontSize = 15.sp,
             )
         }
     }
 }
 
-
 @Composable
-fun CartConterntRoute(
-    vm: CartViewModel= hiltViewModel(),
-    onNavigateShopping: () -> Unit
-){
+fun cartConterntRoute(
+    vm: CartViewModel = hiltViewModel(),
+    onNavigateShopping: () -> Unit,
+) {
     val state by vm.cartState.collectAsState()
-    CartScreen(
-        state=state,
+    cartScreen(
+        state = state,
         onEvent = { event ->
             when (event) {
-                is CartEvent.IncreaseQuantity -> vm.increaseQuantity(
-                    event.item.productId,
-                    event.item.quantity
-                )
+                is CartEvent.IncreaseQuantity ->
+                    vm.increaseQuantity(
+                        event.item.productId,
+                        event.item.quantity,
+                    )
 
-                is CartEvent.DecreaseQuantity -> vm.decreaseQuantity(
-                    event.item.productId,
-                    event.item.quantity,
-                    event.item.id
-                )
+                is CartEvent.DecreaseQuantity ->
+                    vm.decreaseQuantity(
+                        event.item.productId,
+                        event.item.quantity,
+                        event.item.id,
+                    )
 
                 is CartEvent.RemoveItem -> vm.removeItem(event.item.id)
                 is CartEvent.Checkout -> {}
                 is CartEvent.GoShopping -> onNavigateShopping()
-                   }
-                }
-            )
-    }
-
+            }
+        },
+    )
+}

@@ -5,9 +5,9 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import java.security.SecureRandom
 
-
-class DatabasePassphrase(private val context: Context) {
-
+class DatabasePassphrase(
+    private val context: Context,
+) {
     companion object {
         private const val PREFS_FILE = "fakestore_db_passphrase"
         private const val KEY_PASSPHRASE = "db_passphrase"
@@ -15,7 +15,8 @@ class DatabasePassphrase(private val context: Context) {
     }
 
     private val masterKey: MasterKey by lazy {
-        MasterKey.Builder(context)
+        MasterKey
+            .Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
     }
@@ -26,10 +27,9 @@ class DatabasePassphrase(private val context: Context) {
             PREFS_FILE,
             masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
         )
     }
-
 
     fun getPassphrase(): ByteArray {
         val stored = prefs.getString(KEY_PASSPHRASE, null)
@@ -37,18 +37,19 @@ class DatabasePassphrase(private val context: Context) {
             return hexToBytes(stored)
         }
 
-        val passphrase = ByteArray(PASSPHRASE_LENGTH).also {
-            SecureRandom().nextBytes(it)
-        }
-        prefs.edit()
+        val passphrase =
+            ByteArray(PASSPHRASE_LENGTH).also {
+                SecureRandom().nextBytes(it)
+            }
+        prefs
+            .edit()
             .putString(KEY_PASSPHRASE, bytesToHex(passphrase))
             .apply()
 
         return passphrase
     }
 
-    private fun bytesToHex(bytes: ByteArray): String =
-        bytes.joinToString("") { "%02x".format(it) }
+    private fun bytesToHex(bytes: ByteArray): String = bytes.joinToString("") { "%02x".format(it) }
 
     private fun hexToBytes(hex: String): ByteArray =
         ByteArray(hex.length / 2) { i ->

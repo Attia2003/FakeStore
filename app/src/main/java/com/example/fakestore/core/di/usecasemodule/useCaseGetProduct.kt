@@ -9,12 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-
-object UseCaseModule{
+object UseCaseModule {
     @Provides
-    fun ProvideGetProductUseCase(repo : productRepository) : ProductUseCaase =
-        ProductUseCaase(repo)
-
-
+    fun ProvideGetProductUseCase(repo: productRepository): ProductUseCaase = ProductUseCaase(repo)
 }
-

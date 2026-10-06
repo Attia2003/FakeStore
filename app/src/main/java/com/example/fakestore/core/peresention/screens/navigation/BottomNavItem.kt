@@ -6,34 +6,33 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.ui.graphics.vector.ImageVector
 
-
 sealed class BottomNavItem(
     val screen: Screen,
     val title: String,
-    val icon: ImageVector
+    val icon: ImageVector,
 ) {
     data object Home : BottomNavItem(
         screen = Screen.Home,
         title = "Home",
-        icon = Icons.Default.Home
+        icon = Icons.Default.Home,
     )
 
     data object Cart : BottomNavItem(
         screen = Screen.Cart,
         title = "Cart",
-        icon = Icons.Default.ShoppingCart
+        icon = Icons.Default.ShoppingCart,
     )
 
     data object Account : BottomNavItem(
         screen = Screen.Account,
         title = "Account",
-        icon = Icons.Default.Person
+        icon = Icons.Default.Person,
     )
 }
 
-
-val bottomNavItems = listOf(
-    BottomNavItem.Home,
-    BottomNavItem.Cart,
-    BottomNavItem.Account
-)
+val bottomNavItems =
+    listOf(
+        BottomNavItem.Home,
+        BottomNavItem.Cart,
+        BottomNavItem.Account,
+    )

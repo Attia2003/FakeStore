@@ -5,41 +5,39 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.example.fakestore.core.data.dto.CategoryBYid
+import com.example.fakestore.core.data.dto.categoryBYid
 import com.example.fakestore.core.data.dto.getproductbyid
-import com.example.fakestore.core.peresention.screens.component.ProductDetailsContent
-import com.example.fakestore.core.peresention.uistate.ProductByIdUiState
+import com.example.fakestore.core.peresention.screens.component.productDetailsContent
 import com.example.fakestore.core.peresention.uistate.UiError
+import com.example.fakestore.core.peresention.uistate.productByIdUiState
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
 class DetailsProductScreenTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private val fakeCategory = CategoryBYid(id = 1, name = "electronics")
+    private val fakeCategory = categoryBYid(id = 1, name = "electronics")
 
-    private val fakeProduct = getproductbyid(
-        id = 5,
-        price = 22220,
-        description = "noise cancelling wireless headphones and rgp can work with all devices",
-        title = "headphone",
-        category = fakeCategory,
-        images = listOf("https://fakeurl.com/image.png")
-    )
-
-
+    private val fakeProduct =
+        getproductbyid(
+            id = 5,
+            price = 22220,
+            description = "noise cancelling wireless headphones and rgp can work with all devices",
+            title = "headphone",
+            category = fakeCategory,
+            images = listOf("https://fakeurl.com/image.png"),
+        )
 
     @Test
     fun successState_displaysProductTitle() {
         composeTestRule.setContent {
-            ProductDetailsContent(
-                uiState = ProductByIdUiState.Success(fakeProduct),
+            productDetailsContent(
+                uiState = productByIdUiState.Success(fakeProduct),
                 onNavigateBack = {},
                 onRetryClick = {},
-                onAddToCartClick = {}
+                onAddToCartClick = {},
             )
         }
 
@@ -49,11 +47,11 @@ class DetailsProductScreenTest {
     @Test
     fun successState_displaysProductPrice() {
         composeTestRule.setContent {
-            ProductDetailsContent(
-                uiState = ProductByIdUiState.Success(fakeProduct),
+            productDetailsContent(
+                uiState = productByIdUiState.Success(fakeProduct),
                 onNavigateBack = {},
                 onRetryClick = {},
-                onAddToCartClick = {}
+                onAddToCartClick = {},
             )
         }
 
@@ -63,11 +61,11 @@ class DetailsProductScreenTest {
     @Test
     fun successState_displaysCategoryName() {
         composeTestRule.setContent {
-            ProductDetailsContent(
-                uiState = ProductByIdUiState.Success(fakeProduct),
+            productDetailsContent(
+                uiState = productByIdUiState.Success(fakeProduct),
                 onNavigateBack = {},
                 onRetryClick = {},
-                onAddToCartClick = {}
+                onAddToCartClick = {},
             )
         }
 
@@ -77,11 +75,11 @@ class DetailsProductScreenTest {
     @Test
     fun successState_displaysDescription() {
         composeTestRule.setContent {
-            ProductDetailsContent(
-                uiState = ProductByIdUiState.Success(fakeProduct),
+            productDetailsContent(
+                uiState = productByIdUiState.Success(fakeProduct),
                 onNavigateBack = {},
                 onRetryClick = {},
-                onAddToCartClick = {}
+                onAddToCartClick = {},
             )
         }
 
@@ -93,11 +91,11 @@ class DetailsProductScreenTest {
     @Test
     fun successState_displaysAddToCartButton() {
         composeTestRule.setContent {
-            ProductDetailsContent(
-                uiState = ProductByIdUiState.Success(fakeProduct),
+            productDetailsContent(
+                uiState = productByIdUiState.Success(fakeProduct),
                 onNavigateBack = {},
                 onRetryClick = {},
-                onAddToCartClick = {}
+                onAddToCartClick = {},
             )
         }
 
@@ -110,11 +108,11 @@ class DetailsProductScreenTest {
         var clickedProductId: Int? = null
 
         composeTestRule.setContent {
-            ProductDetailsContent(
-                uiState = ProductByIdUiState.Success(fakeProduct),
+            productDetailsContent(
+                uiState = productByIdUiState.Success(fakeProduct),
                 onNavigateBack = {},
                 onRetryClick = {},
-                onAddToCartClick = { product -> clickedProductId = product.id }
+                onAddToCartClick = { product -> clickedProductId = product.id },
             )
         }
 
@@ -128,11 +126,11 @@ class DetailsProductScreenTest {
         var backClicked = false
 
         composeTestRule.setContent {
-            ProductDetailsContent(
-                uiState = ProductByIdUiState.Success(fakeProduct),
+            productDetailsContent(
+                uiState = productByIdUiState.Success(fakeProduct),
                 onNavigateBack = { backClicked = true },
                 onRetryClick = {},
-                onAddToCartClick = {}
+                onAddToCartClick = {},
             )
         }
 
@@ -141,32 +139,28 @@ class DetailsProductScreenTest {
         assertTrue("Back navigation callback should be invoked", backClicked)
     }
 
-
-
     @Test
     fun loadingState_displaysLoadingIndicator() {
         composeTestRule.setContent {
-            ProductDetailsContent(
-                uiState = ProductByIdUiState.Loading,
+            productDetailsContent(
+                uiState = productByIdUiState.Loading,
                 onNavigateBack = {},
                 onRetryClick = {},
-                onAddToCartClick = {}
+                onAddToCartClick = {},
             )
         }
 
         composeTestRule.onNodeWithTag("loading_indicator").assertIsDisplayed()
     }
 
-
-
     @Test
     fun errorState_noInternet_displaysMessage() {
         composeTestRule.setContent {
-            ProductDetailsContent(
-                uiState = ProductByIdUiState.Error(UiError.NoInternet),
+            productDetailsContent(
+                uiState = productByIdUiState.Error(UiError.NoInternet),
                 onNavigateBack = {},
                 onRetryClick = {},
-                onAddToCartClick = {}
+                onAddToCartClick = {},
             )
         }
 
@@ -176,11 +170,11 @@ class DetailsProductScreenTest {
     @Test
     fun errorState_displaysRetryButton() {
         composeTestRule.setContent {
-            ProductDetailsContent(
-                uiState = ProductByIdUiState.Error(UiError.Unknown),
+            productDetailsContent(
+                uiState = productByIdUiState.Error(UiError.Unknown),
                 onNavigateBack = {},
                 onRetryClick = {},
-                onAddToCartClick = {}
+                onAddToCartClick = {},
             )
         }
 
@@ -193,11 +187,11 @@ class DetailsProductScreenTest {
         var retryClicked = false
 
         composeTestRule.setContent {
-            ProductDetailsContent(
-                uiState = ProductByIdUiState.Error(UiError.Unknown),
+            productDetailsContent(
+                uiState = productByIdUiState.Error(UiError.Unknown),
                 onNavigateBack = {},
                 onRetryClick = { retryClicked = true },
-                onAddToCartClick = {}
+                onAddToCartClick = {},
             )
         }
 

@@ -5,5 +5,3 @@ import com.example.fakestore.core.data.dto.getproductbyid
 interface productByIdRepository {
     suspend fun getProductByID(id: Int): getproductbyid
 }
-
-

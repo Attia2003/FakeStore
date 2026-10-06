@@ -1,6 +1,12 @@
 package com.example.fakestore.core.peresention.screens.component
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -16,50 +22,50 @@ import com.example.fakestore.core.peresention.uistate.CategoryUiState
 import com.example.fakestore.core.peresention.uistate.UiError
 
 @Composable
-fun HorizontalCategoryList(
+fun horizontalCategoryList(
     categoryState: CategoryUiState,
     onCategoryClick: (CategoryDto) -> Unit,
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-
         Text(
             text = "Categories",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
         )
-
 
         when (categoryState) {
             CategoryUiState.Idle -> {
-
             }
 
             CategoryUiState.Loading -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp),
-                    contentAlignment = Alignment.Center
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
                 }
             }
 
             is CategoryUiState.Error -> {
-                val message = when (val error = categoryState.error) {
-                    UiError.NoInternet -> "Check your Internet"
-                    is UiError.Http -> "Error ${error.code}"
-                    UiError.Unknown -> "Unknown Error"
-                    else -> ""
-                }
+                val message =
+                    when (val error = categoryState.error) {
+                        UiError.NoInternet -> "Check your Internet"
+                        is UiError.Http -> "Error ${error.code}"
+                        UiError.Unknown -> "Unknown Error"
+                        else -> ""
+                    }
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(text = message)
                     Button(onClick = onRetry) {
@@ -72,15 +78,15 @@ fun HorizontalCategoryList(
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(
                         items = categoryState.categories,
-                        key = { it.id }
+                        key = { it.id },
                     ) { category ->
-                        CategoryCard(
+                        categoryCard(
                             category = category,
-                            onClick = { onCategoryClick(category) }
+                            onClick = { onCategoryClick(category) },
                         )
                     }
                 }

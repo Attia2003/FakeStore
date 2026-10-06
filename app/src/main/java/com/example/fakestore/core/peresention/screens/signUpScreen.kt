@@ -3,15 +3,28 @@ package com.example.fakestore.core.peresention.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -23,18 +36,21 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.fakestore.core.peresention.components.*
+import com.example.fakestore.core.peresention.components.authButton
+import com.example.fakestore.core.peresention.components.authHeader
+import com.example.fakestore.core.peresention.components.authTextField
+import com.example.fakestore.core.peresention.components.passwordTextField
+import com.example.fakestore.core.peresention.components.toMessage
 import com.example.fakestore.core.peresention.uistate.SignUpUiState
 import com.example.fakestore.core.peresention.vm.SignUpViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(
+fun signUpScreen(
     viewModel: SignUpViewModel = hiltViewModel(),
     onSignUpSuccess: () -> Unit = {},
-    onNavigateToLogin: () -> Unit = {}
+    onNavigateToLogin: () -> Unit = {},
 ) {
-
     val uiState by viewModel.uiState.collectAsState()
     val name by viewModel.name.collectAsState()
     val email by viewModel.email.collectAsState()
@@ -50,24 +66,25 @@ fun SignUpScreen(
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
-
     LaunchedEffect(uiState) {
         when (val state = uiState) {
             is SignUpUiState.Success -> {
-                Toast.makeText(
-                    context,
-                    "Account created successfully! Welcome ${state.user.name}",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast
+                    .makeText(
+                        context,
+                        "Account created successfully! Welcome ${state.user.name}",
+                        Toast.LENGTH_LONG,
+                    ).show()
                 viewModel.resetState()
                 onSignUpSuccess()
             }
             is SignUpUiState.Error -> {
-                Toast.makeText(
-                    context,
-                    state.error.toMessage(),
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast
+                    .makeText(
+                        context,
+                        state.error.toMessage(),
+                        Toast.LENGTH_LONG,
+                    ).show()
                 viewModel.resetState()
             }
             else -> {}
@@ -75,36 +92,38 @@ fun SignUpScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        MaterialTheme.colorScheme.background
-                    )
-                )
-            )
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(
+                    brush =
+                        Brush.verticalGradient(
+                            colors =
+                                listOf(
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    MaterialTheme.colorScheme.background,
+                                ),
+                        ),
+                ),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(60.dp))
 
-
-            AuthHeader(
+            authHeader(
                 title = "Create Account",
-                subtitle = "Sign up to get started"
+                subtitle = "Sign up to get started",
             )
 
             Spacer(modifier = Modifier.height(48.dp))
 
-
-            AuthTextField(
+            authTextField(
                 value = name,
                 onValueChange = viewModel::onNameChange,
                 label = "Full Name",
@@ -113,15 +132,15 @@ fun SignUpScreen(
                 errorMessage = nameError,
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next,
-                keyboardActions = KeyboardActions(
-                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                )
+                keyboardActions =
+                    KeyboardActions(
+                        onNext = { focusManager.moveFocus(FocusDirection.Down) },
+                    ),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
-            AuthTextField(
+            authTextField(
                 value = email,
                 onValueChange = viewModel::onEmailChange,
                 label = "Email",
@@ -130,15 +149,15 @@ fun SignUpScreen(
                 errorMessage = emailError,
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
-                keyboardActions = KeyboardActions(
-                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                )
+                keyboardActions =
+                    KeyboardActions(
+                        onNext = { focusManager.moveFocus(FocusDirection.Down) },
+                    ),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
-            PasswordTextField(
+            passwordTextField(
                 value = password,
                 onValueChange = viewModel::onPasswordChange,
                 label = "Password",
@@ -147,15 +166,15 @@ fun SignUpScreen(
                 onPasswordVisibilityChange = { viewModel.onPasswordVisibilityToggle() },
                 errorMessage = passwordError,
                 imeAction = ImeAction.Next,
-                keyboardActions = KeyboardActions(
-                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                )
+                keyboardActions =
+                    KeyboardActions(
+                        onNext = { focusManager.moveFocus(FocusDirection.Down) },
+                    ),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
-            PasswordTextField(
+            passwordTextField(
                 value = confirmPassword,
                 onValueChange = viewModel::onConfirmPasswordChange,
                 label = "Confirm Password",
@@ -164,24 +183,24 @@ fun SignUpScreen(
                 onPasswordVisibilityChange = { viewModel.onConfirmPasswordVisibilityToggle() },
                 errorMessage = confirmPasswordError,
                 imeAction = ImeAction.Done,
-                keyboardActions = KeyboardActions(
-                    onDone = { 
-                        focusManager.clearFocus()
-                        viewModel.onSignUpClick()
-                    }
-                )
+                keyboardActions =
+                    KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                            viewModel.onSignUpClick()
+                        },
+                    ),
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-
-            AuthButton(
+            authButton(
                 text = "Sign Up",
-                onClick = { 
+                onClick = {
                     focusManager.clearFocus()
                     viewModel.onSignUpClick()
                 },
-                isLoading = uiState is SignUpUiState.Loading
+                isLoading = uiState is SignUpUiState.Loading,
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -189,20 +208,21 @@ fun SignUpScreen(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "Already have an account? ",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = "Login",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
+                    style =
+                        MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                        ),
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { onNavigateToLogin() }
+                    modifier = Modifier.clickable { onNavigateToLogin() },
                 )
             }
 

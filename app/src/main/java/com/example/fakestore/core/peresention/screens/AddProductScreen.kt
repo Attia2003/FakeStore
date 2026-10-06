@@ -1,34 +1,55 @@
 package com.example.fakestore.core.peresention.screens
 
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.fakestore.core.data.dto.CreateProductRequest
+import com.example.fakestore.core.data.dto.createProductRequest
 import com.example.fakestore.core.peresention.uistate.AddProductUiState
 import com.example.fakestore.core.peresention.uistate.UiError
 import com.example.fakestore.core.peresention.vm.AddProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductScreen(
+fun addProductScreen(
     uiState: AddProductUiState,
     onCloseClick: () -> Unit,
-    onCreateProductClick: (CreateProductRequest) -> Unit
+    onCreateProductClick: (createProductRequest) -> Unit,
 ) {
-
     var title by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -39,9 +60,6 @@ fun AddProductScreen(
     var priceError by remember { mutableStateOf(false) }
     var descriptionError by remember { mutableStateOf(false) }
 
-
-
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -50,30 +68,32 @@ fun AddProductScreen(
                     IconButton(onClick = onCloseClick) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Close"
+                            contentDescription = "Close",
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
             )
-        }
+        },
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-
                 OutlinedTextField(
                     value = title,
                     onValueChange = {
@@ -88,9 +108,8 @@ fun AddProductScreen(
                             Text("Title is required")
                         }
                     },
-                    singleLine = true
+                    singleLine = true,
                 )
-
 
                 OutlinedTextField(
                     value = price,
@@ -108,9 +127,8 @@ fun AddProductScreen(
                         }
                     },
                     singleLine = true,
-                    prefix = { Text("$") }
+                    prefix = { Text("$") },
                 )
-
 
                 OutlinedTextField(
                     value = description,
@@ -127,9 +145,8 @@ fun AddProductScreen(
                         }
                     },
                     minLines = 1,
-                    maxLines = 6
+                    maxLines = 6,
                 )
-
 
                 OutlinedTextField(
                     value = imageUrl,
@@ -137,9 +154,8 @@ fun AddProductScreen(
                     label = { Text("Image URL") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    placeholder = { Text("https://example.com/image.jpg") }
+                    placeholder = { Text("https://example.com/image.jpg") },
                 )
-
 
                 OutlinedTextField(
                     value = categoryId,
@@ -147,56 +163,55 @@ fun AddProductScreen(
                     label = { Text("Category ID") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true
+                    singleLine = true,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-
                 Button(
                     onClick = {
-
                         titleError = title.isBlank()
                         priceError = price.isBlank() || price.toLongOrNull() == null
                         descriptionError = description.isBlank()
 
                         if (!titleError && !priceError && !descriptionError) {
-                            val images = if (imageUrl.isNotBlank()) {
-                                listOf(imageUrl)
-                            } else {
-                                listOf("https://placeimg.com/640/480/any")
-                            }
+                            val images =
+                                if (imageUrl.isNotBlank()) {
+                                    listOf(imageUrl)
+                                } else {
+                                    listOf("https://placeimg.com/640/480/any")
+                                }
                             onCreateProductClick(
-                            CreateProductRequest(
-                                title = title,
-                                price = price.toDoubleOrNull() ?: 0.0,
-                                description = description,
-                                categoryId = categoryId.toIntOrNull() ?: 1,
-                                images = images
-                                 )
+                                createProductRequest(
+                                    title = title,
+                                    price = price.toDoubleOrNull() ?: 0.0,
+                                    description = description,
+                                    categoryId = categoryId.toIntOrNull() ?: 1,
+                                    images = images,
+                                ),
                             )
                         }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    enabled = uiState !is AddProductUiState.Loading
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                    enabled = uiState !is AddProductUiState.Loading,
                 ) {
                     if (uiState is AddProductUiState.Loading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onPrimary,
                         )
                     } else {
                         Text("Create Product", style = MaterialTheme.typography.bodyLarge)
                     }
                 }
 
-
                 Text(
                     text = "* Required fields",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -204,9 +219,9 @@ fun AddProductScreen(
 }
 
 @Composable
-fun AddProductScreenRoute(
+fun addProductScreenRoute(
     viewModel: AddProductViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -219,12 +234,13 @@ fun AddProductScreenRoute(
                     onNavigateBack()
                 }
                 is AddProductUiState.Error -> {
-                    val message = when (event.error) {
-                        UiError.NoInternet -> "No internet connection"
-                        is UiError.Http -> "Server error: ${event.error.code}"
-                        UiError.Unknown -> "An error occurred"
-                        else -> "Unknown Error"
-                    }
+                    val message =
+                        when (event.error) {
+                            UiError.NoInternet -> "No internet connection"
+                            is UiError.Http -> "Server error: ${event.error.code}"
+                            UiError.Unknown -> "An error occurred"
+                            else -> "Unknown Error"
+                        }
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }
 
@@ -233,12 +249,11 @@ fun AddProductScreenRoute(
         }
     }
 
-    AddProductScreen(
+    addProductScreen(
         uiState = uiState,
         onCloseClick = onNavigateBack,
         onCreateProductClick = { form ->
             viewModel.createProduct(form)
-        }
+        },
     )
-
 }

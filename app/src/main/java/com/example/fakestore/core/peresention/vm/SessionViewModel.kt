@@ -8,12 +8,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
-
 @HiltViewModel
-class SessionViewModel @Inject constructor(
-    tokenManager: TokenManager
-) : ViewModel() {
-
-    private val _isLoggedIn = MutableStateFlow(tokenManager.isLoggedIn())
-    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
-}
+class SessionViewModel
+    @Inject
+    constructor(
+        tokenManager: TokenManager,
+    ) : ViewModel() {
+        private val _isLoggedIn = MutableStateFlow(tokenManager.isLoggedIn())
+        val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
+    }

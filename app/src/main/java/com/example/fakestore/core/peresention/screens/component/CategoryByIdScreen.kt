@@ -61,11 +61,11 @@ import com.example.fakestore.core.peresention.vm.CategoryByIdViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryByIdScreen(
+fun categoryByIdScreen(
     id: Int,
     onNavigateBack: () -> Unit = {},
     onProductClick: (Int) -> Unit = {},
-    vm: CategoryByIdViewModel = hiltViewModel()
+    vm: CategoryByIdViewModel = hiltViewModel(),
 ) {
     val state by vm.categoryByIdState.collectAsState()
 
@@ -77,110 +77,117 @@ fun CategoryByIdScreen(
                 title = {
                     Text(
                         text = "Category Products",
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
             )
-        }
+        },
     ) { paddingValues ->
         AnimatedContent(
             targetState = state,
             transitionSpec = {
                 fadeIn(tween(300)) togetherWith fadeOut(tween(200))
             },
-            label = "CategoryByIdContent"
+            label = "CategoryByIdContent",
         ) { currentState ->
             when (currentState) {
                 is CategoryByIdUiState.Idle -> {
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues),
+                        contentAlignment = Alignment.Center,
                     ) {}
                 }
 
                 is CategoryByIdUiState.Loading -> {
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues),
+                        contentAlignment = Alignment.Center,
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(56.dp),
                                 strokeWidth = 4.dp,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.primary,
                             )
                             Text(
                                 text = "Loading products...",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
                 }
 
                 is CategoryByIdUiState.Error -> {
-                    val message = when (val error = currentState.error) {
-                        UiError.NoInternet -> "No internet connection.\nPlease check your network."
-                        is UiError.Http -> "Server error (${error.code}).\nPlease try again."
-                        UiError.Unknown -> "Something went wrong.\nPlease try again."
-                        else -> "An unexpected error occurred."
-                    }
+                    val message =
+                        when (val error = currentState.error) {
+                            UiError.NoInternet -> "No internet connection.\nPlease check your network."
+                            is UiError.Http -> "Server error (${error.code}).\nPlease try again."
+                            UiError.Unknown -> "Something went wrong.\nPlease try again."
+                            else -> "An unexpected error occurred."
+                        }
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues),
+                        contentAlignment = Alignment.Center,
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.padding(32.dp)
+                            modifier = Modifier.padding(32.dp),
                         ) {
                             Box(
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.errorContainer),
-                                contentAlignment = Alignment.Center
+                                modifier =
+                                    Modifier
+                                        .size(80.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.errorContainer),
+                                contentAlignment = Alignment.Center,
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Category,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onErrorContainer,
-                                    modifier = Modifier.size(40.dp)
+                                    modifier = Modifier.size(40.dp),
                                 )
                             }
                             Text(
                                 text = message,
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
                             )
                             Button(
                                 onClick = { vm.getCategoryById(id) },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                )
+                                colors =
+                                    ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                    ),
                             ) {
                                 Text("Try Again")
                             }
@@ -192,15 +199,16 @@ fun CategoryByIdScreen(
                     val products = currentState.products
                     if (products.isEmpty()) {
                         Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues),
-                            contentAlignment = Alignment.Center
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(paddingValues),
+                            contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 text = "No products found in this category.",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     } else {
@@ -209,12 +217,12 @@ fun CategoryByIdScreen(
                             contentPadding = PaddingValues(16.dp),
                             horizontalArrangement = Arrangement.spacedBy(16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.fillMaxSize().padding(paddingValues)
+                            modifier = Modifier.fillMaxSize().padding(paddingValues),
                         ) {
                             items(products, key = { it.id }) { product ->
-                                ProductGridCard(
+                                productGridCard(
                                     product = product,
-                                    onClick = { onProductClick(product.id) }
+                                    onClick = { onProductClick(product.id) },
                                 )
                             }
                         }
@@ -226,40 +234,43 @@ fun CategoryByIdScreen(
 }
 
 @Composable
-fun ProductGridCard(
+fun productGridCard(
     product: getproductbyid,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        shape = RoundedCornerShape(16.dp)
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+            ),
+        shape = RoundedCornerShape(16.dp),
     ) {
         Column {
             val imageUrl = product.images?.firstOrNull() ?: ""
-            
+
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .background(Color.White)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .background(Color.White),
             ) {
                 AsyncImage(
                     model = imageUrl,
                     contentDescription = product.title,
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
                 )
             }
 
             Column(
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier.padding(12.dp),
             ) {
                 Text(
                     text = product.title.orEmpty(),
@@ -267,7 +278,7 @@ fun ProductGridCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -276,23 +287,23 @@ fun ProductGridCard(
                     text = "EGP ${product.price}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
-                
+
                 Spacer(modifier = Modifier.height(6.dp))
-                
+
                 Text(
                     text = product.category.name,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.surfaceVariant, 
-                            RoundedCornerShape(4.dp)
-                        )
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                    modifier =
+                        Modifier
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant,
+                                RoundedCornerShape(4.dp),
+                            ).padding(horizontal = 6.dp, vertical = 2.dp),
                 )
             }
         }

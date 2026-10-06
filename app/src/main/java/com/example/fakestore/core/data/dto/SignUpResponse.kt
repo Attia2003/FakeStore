@@ -6,5 +6,5 @@ data class SignUpResponse(
     val name: String,
     val avatar: String,
     val creationAt: String,
-    val updatedAt: String
+    val updatedAt: String,
 )

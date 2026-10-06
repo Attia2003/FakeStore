@@ -14,24 +14,18 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object CartUseCaseModule {
+    @Provides
+    fun provideGetCartItemsUseCase(repo: CartRepository): GetCartItemsUseCase = GetCartItemsUseCase(repo)
 
     @Provides
-    fun provideGetCartItemsUseCase(repo: CartRepository): GetCartItemsUseCase =
-        GetCartItemsUseCase(repo)
+    fun provideAddToCartUseCase(repo: CartRepository): AddToCartUseCase = AddToCartUseCase(repo)
 
     @Provides
-    fun provideAddToCartUseCase(repo: CartRepository): AddToCartUseCase =
-        AddToCartUseCase(repo)
+    fun provideUpdateCartQuantityUseCase(repo: CartRepository): UpdateCartQuantityUseCase = UpdateCartQuantityUseCase(repo)
 
     @Provides
-    fun provideUpdateCartQuantityUseCase(repo: CartRepository): UpdateCartQuantityUseCase =
-        UpdateCartQuantityUseCase(repo)
+    fun provideRemoveFromCartUseCase(repo: CartRepository): RemoveFromCartUseCase = RemoveFromCartUseCase(repo)
 
     @Provides
-    fun provideRemoveFromCartUseCase(repo: CartRepository): RemoveFromCartUseCase =
-        RemoveFromCartUseCase(repo)
-
-    @Provides
-    fun provideClearExpiredCartUseCase(repo: CartRepository): ClearExpiredCartUseCase =
-        ClearExpiredCartUseCase(repo)
+    fun provideClearExpiredCartUseCase(repo: CartRepository): ClearExpiredCartUseCase = ClearExpiredCartUseCase(repo)
 }

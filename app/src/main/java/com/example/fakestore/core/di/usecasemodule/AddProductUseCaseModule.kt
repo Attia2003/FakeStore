@@ -9,9 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-
 object AddProductUseCaseModule {
     @Provides
-    fun provideAddProductUseCase(repo: AddProductRepository): AddProductUseCase =
-        AddProductUseCase(repo)
+    fun provideAddProductUseCase(repo: AddProductRepository): AddProductUseCase = AddProductUseCase(repo)
 }
