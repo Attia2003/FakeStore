@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CartDao {
-
     @Query("SELECT * FROM cart_items ORDER BY addedAt DESC")
     fun getAll(): Flow<List<CartItemEntity>>
 

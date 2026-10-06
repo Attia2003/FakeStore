@@ -16,78 +16,66 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = DarkPrimary,
-    onPrimary = Color.White,
-    primaryContainer = DarkPrimaryVariant,
-    onPrimaryContainer = Color.White,
-    
-    secondary = DarkAccent,
-    onSecondary = Color.White,
-    
-    tertiary = DarkAccent,
-    onTertiary = Color.White,
-    
-    background = DarkBackground,
-    onBackground = DarkText,
-    
-    surface = DarkSurface,
-    onSurface = DarkText,
-    
-    surfaceVariant = DarkSurface,
-    onSurfaceVariant = DarkTextMuted,
-    
-    error = DarkError,
-    onError = Color.White,
-    
-    outline = DarkBorder,
-    outlineVariant = DarkBorder
-)
+private val DarkColorScheme =
+    darkColorScheme(
+        primary = DarkPrimary,
+        onPrimary = Color.White,
+        primaryContainer = DarkPrimaryVariant,
+        onPrimaryContainer = Color.White,
+        secondary = DarkAccent,
+        onSecondary = Color.White,
+        tertiary = DarkAccent,
+        onTertiary = Color.White,
+        background = DarkBackground,
+        onBackground = DarkText,
+        surface = DarkSurface,
+        onSurface = DarkText,
+        surfaceVariant = DarkSurface,
+        onSurfaceVariant = DarkTextMuted,
+        error = DarkError,
+        onError = Color.White,
+        outline = DarkBorder,
+        outlineVariant = DarkBorder,
+    )
 
-private val LightColorScheme = lightColorScheme(
-    primary = LightPrimary,
-    onPrimary = Color.White,
-    primaryContainer = LightPrimaryVariant,
-    onPrimaryContainer = Color.White,
-    
-    secondary = LightAccent,
-    onSecondary = Color.White,
-    
-    tertiary = LightAccent,
-    onTertiary = Color.White,
-    
-    background = LightBackground,
-    onBackground = LightText,
-    
-    surface = LightSurface,
-    onSurface = LightText,
-    
-    surfaceVariant = LightSurface,
-    onSurfaceVariant = LightTextMuted,
-    
-    error = LightError,
-    onError = Color.White,
-    
-    outline = LightBorder,
-    outlineVariant = LightBorder
-)
+private val LightColorScheme =
+    lightColorScheme(
+        primary = LightPrimary,
+        onPrimary = Color.White,
+        primaryContainer = LightPrimaryVariant,
+        onPrimaryContainer = Color.White,
+        secondary = LightAccent,
+        onSecondary = Color.White,
+        tertiary = LightAccent,
+        onTertiary = Color.White,
+        background = LightBackground,
+        onBackground = LightText,
+        surface = LightSurface,
+        onSurface = LightText,
+        surfaceVariant = LightSurface,
+        onSurfaceVariant = LightTextMuted,
+        error = LightError,
+        onError = Color.White,
+        outline = LightBorder,
+        outlineVariant = LightBorder,
+    )
 
 @Composable
-fun FakeStoreTheme(
+fun fakeStoreTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-
     dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+    val colorScheme =
+        when {
+            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                val context = LocalContext.current
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+            darkTheme -> DarkColorScheme
+            else -> LightColorScheme
+        }
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -101,6 +89,6 @@ fun FakeStoreTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }

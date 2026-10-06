@@ -12,27 +12,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-
 
 @Composable
 fun MainScaffold(
-    navController: NavHostController,
-    content: @Composable (PaddingValues) -> Unit
+    currentRoute: String?,
+    onNavigate: (String) -> Unit,
+    content: @Composable (PaddingValues) -> Unit,
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+    val routesWithoutBottomBar =
+        listOf(
+            Screen.Login.route,
+            Screen.SignUp.route,
+            Screen.Splash.route,
+        )
 
-    val routesWithoutBottomBar = listOf(
-        Screen.Login.route,
-        Screen.SignUp.route,
-        Screen.Splash.route
-    )
-
-    val shouldShowBottomBar = currentDestination?.route !in routesWithoutBottomBar
+    val shouldShowBottomBar = currentRoute !in routesWithoutBottomBar
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -41,43 +35,37 @@ fun MainScaffold(
                 NavigationBar(
                     containerColor = MaterialTheme.colorScheme.background,
                     contentColor = MaterialTheme.colorScheme.onBackground,
-                    tonalElevation = 0.dp
+                    tonalElevation = 0.dp,
                 ) {
                     bottomNavItems.forEach { item ->
-                        val isSelected = currentDestination?.hierarchy?.any {
-                            it.route == item.screen.route
-                        } == true
+
+                        val isSelected = currentRoute == item.screen.route
 
                         NavigationBarItem(
                             icon = {
                                 Icon(
                                     imageVector = item.icon,
-                                    contentDescription = item.title
+                                    contentDescription = item.title,
                                 )
                             },
                             label = { Text(item.title) },
                             selected = isSelected,
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = Color(0xFF4285F4),
-                                selectedTextColor = Color(0xFF4285F4),
-                                unselectedIconColor = Color(0xFF8C9AB5),
-                                unselectedTextColor = Color(0xFF8C9AB5),
-                                indicatorColor = Color.Transparent
-                            ),
+                            colors =
+                                NavigationBarItemDefaults.colors(
+                                    selectedIconColor = Color(0xFF4285F4),
+                                    selectedTextColor = Color(0xFF4285F4),
+                                    unselectedIconColor = Color(0xFF8C9AB5),
+                                    unselectedTextColor = Color(0xFF8C9AB5),
+                                    indicatorColor = Color.Transparent,
+                                ),
                             onClick = {
-                                navController.navigate(item.screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
+                                onNavigate(item.screen.route)
+                            },
                         )
                     }
                 }
             }
         },
-        content = content
+        content = content,
     )
 }

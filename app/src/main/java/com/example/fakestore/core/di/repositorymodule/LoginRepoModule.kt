@@ -12,17 +12,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object LoginRepoModule {
-
     @Provides
     @Singleton
     fun provideLoginRepository(impl: LoginRepoImpl): loginRepository = impl
 
     @Provides
     @Singleton
-    fun provideLoginUseCase(repo: loginRepository): LoginUseCase {
-        return LoginUseCase(repo)
-    }
-
-
-
+    fun provideLoginUseCase(repo: loginRepository): LoginUseCase = LoginUseCase(repo)
 }

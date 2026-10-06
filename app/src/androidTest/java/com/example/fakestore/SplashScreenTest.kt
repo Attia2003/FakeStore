@@ -1,30 +1,26 @@
 package com.example.fakestore
 
-import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
-import org.junit.Rule
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import com.example.fakestore.core.peresention.screens.SplashScreen
+import com.example.fakestore.core.peresention.screens.splashScreen
+import org.junit.Rule
 import org.junit.Test
 
 class SplashScreenTest {
-
     @get:Rule
     val composeRule = createComposeRule()
 
-
     @Test
-    fun SplashShowButtonvisVibility(){
-
-
+    fun splashShowButtonvisVibility() {
         composeRule.setContent {
-            SplashScreen(
+            splashScreen(
                 isLoggedIn = false,
-                onNavigate = {}
+                onNavigate = {},
             )
         }
 
@@ -47,12 +43,10 @@ class SplashScreenTest {
         composeRule.mainClock.autoAdvance = false
 
         composeRule.setContent {
-            SplashScreen(
+            splashScreen(
                 isLoggedIn = false,
-                onNavigate = {}
+                onNavigate = {},
             )
         }
-
     }
-
 }

@@ -13,30 +13,31 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CategoryViewModel @Inject constructor(
-    private val categoryUseCase: CategoryUseCase
-) : ViewModel() {
+class CategoryViewModel
+    @Inject
+    constructor(
+        private val categoryUseCase: CategoryUseCase,
+    ) : ViewModel() {
+        private val _categoryState = MutableStateFlow<CategoryUiState>(CategoryUiState.Idle)
+        val categoryState: StateFlow<CategoryUiState> = _categoryState
 
-    private val _categoryState = MutableStateFlow<CategoryUiState>(CategoryUiState.Idle)
-    val categoryState: StateFlow<CategoryUiState> = _categoryState
+        init {
+            getAllCategories()
+        }
 
-    init {
-        getAllCategories()
-    }
+        fun getAllCategories() {
+            if (_categoryState.value is CategoryUiState.Loading) return
 
-    fun getAllCategories() {
-        if (_categoryState.value is CategoryUiState.Loading) return
-
-        viewModelScope.launch {
-            _categoryState.value = CategoryUiState.Loading
-            try {
-                val categories = categoryUseCase.call()
-                Log.d("CategoryViewModel", "Categories loaded: ${categories.size}")
-                _categoryState.value = CategoryUiState.Success(categories)
-            } catch (e: Exception) {
-                Log.e("CategoryViewModel", "Error: ${e.message}", e)
-                _categoryState.value = CategoryUiState.Error(e.toUiError())
+            viewModelScope.launch {
+                _categoryState.value = CategoryUiState.Loading
+                try {
+                    val categories = categoryUseCase.call()
+                    Log.d("CategoryViewModel", "Categories loaded: ${categories.size}")
+                    _categoryState.value = CategoryUiState.Success(categories)
+                } catch (e: Exception) {
+                    Log.e("CategoryViewModel", "Error: ${e.message}", e)
+                    _categoryState.value = CategoryUiState.Error(e.toUiError())
+                }
             }
         }
     }
-}

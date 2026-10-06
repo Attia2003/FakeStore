@@ -1,9 +1,11 @@
 package com.example.fakestore.core.data.local.db
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "cart_items")
+@Immutable
 data class CartItemEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -12,5 +14,5 @@ data class CartItemEntity(
     val price: Double,
     val imageUrl: String,
     val quantity: Int,
-    val addedAt: Long = System.currentTimeMillis()
+    val addedAt: Long = System.currentTimeMillis(),
 )

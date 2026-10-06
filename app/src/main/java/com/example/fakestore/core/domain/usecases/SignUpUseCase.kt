@@ -5,9 +5,7 @@ import com.example.fakestore.core.data.dto.SignUpResponse
 import com.example.fakestore.core.domain.contract.SignUpRepository
 
 class SignUpUseCase(
-    private val repo: SignUpRepository
+    private val repo: SignUpRepository,
 ) {
-    suspend fun call(request: SignUpRequest): SignUpResponse {
-        return repo.signUp(request)
-    }
+    suspend fun call(request: SignUpRequest): SignUpResponse = repo.signUp(request)
 }

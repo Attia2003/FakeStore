@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 @Database(
     entities = [CartItemEntity::class],
     version = 1,
-    exportSchema = false
+    exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun cartDao(): CartDao

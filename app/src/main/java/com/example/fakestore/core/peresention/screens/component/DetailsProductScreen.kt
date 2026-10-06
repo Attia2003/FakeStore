@@ -34,27 +34,25 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
-import com.example.fakestore.core.peresention.uistate.ProductByIdUiState
+import com.example.fakestore.core.data.dto.getproductbyid
 import com.example.fakestore.core.peresention.uistate.UiError
+import com.example.fakestore.core.peresention.uistate.productByIdUiState
 import com.example.fakestore.core.peresention.vm.CartViewModel
 import com.example.fakestore.core.peresention.vm.ProductByIdViewModel
-import com.example.fakestore.core.data.dto.getproductbyid
-import com.example.fakestore.core.peresention.uistate.CategoryByIdUiState
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductDetailsScreen(
-    id:Int,
+fun productDetailsScreen(
+    id: Int,
     onNavigateBack: () -> Unit = {},
     vm: ProductByIdViewModel = hiltViewModel(),
-    cartVm: CartViewModel = hiltViewModel()
+    cartVm: CartViewModel = hiltViewModel(),
 ) {
     val state by vm.productByIdState.collectAsState()
 
     LaunchedEffect(id) { vm.getProductById(id) }
 
-    ProductDetailsContent(
+    productDetailsContent(
         uiState = state,
         onNavigateBack = onNavigateBack,
         onRetryClick = { vm.getProductById(id) },
@@ -63,147 +61,155 @@ fun ProductDetailsScreen(
                 productId = getproductbyid.id,
                 title = getproductbyid.title.orEmpty(),
                 price = getproductbyid.price.toDouble(),
-                imageUrl = getproductbyid.images?.firstOrNull() ?: ""
+                imageUrl = getproductbyid.images?.firstOrNull() ?: "",
             )
-        }
+        },
     )
 }
-  @OptIn(ExperimentalMaterial3Api::class)
-  @Composable
-  fun ProductDetailsContent(
-      uiState: ProductByIdUiState,
-      onNavigateBack: () -> Unit,
-      onRetryClick: () -> Unit,
-      onAddToCartClick: (getproductbyid) -> Unit
-  ){
 
-      Scaffold(
-          topBar = {
-              TopAppBar(
-                  modifier = Modifier.padding(bottom = 16.dp),
-                  title = { Text("Product Details") },
-                  navigationIcon = {
-                      IconButton(
-                          onClick = onNavigateBack,
-                          modifier = Modifier.testTag("back_button")
-                      ) {
-                          Icon(
-                              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                              contentDescription = "Back"
-                          )
-                      }
-                  },
-                  colors = TopAppBarDefaults.topAppBarColors(
-                      containerColor = MaterialTheme.colorScheme.background,
-                      titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                  )
-              )
-          }
-      ) { paddingValues ->
-          Column(
-              modifier = Modifier
-                  .fillMaxSize()
-                  .padding(paddingValues)
-                  .padding(top = 6.dp)
-                  .verticalScroll(rememberScrollState())
-          ) {
-              when (val istate = uiState) {
-                  ProductByIdUiState.Idle -> {}
-                  ProductByIdUiState.Loading -> {
-                      androidx.compose.foundation.layout.Box(
-                          modifier = Modifier.fillMaxWidth().height(200.dp).testTag("loading_indicator"),
-                          contentAlignment = Alignment.Center
-                      ) { CircularProgressIndicator() }
-                  }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun productDetailsContent(
+    uiState: productByIdUiState,
+    onNavigateBack: () -> Unit,
+    onRetryClick: () -> Unit,
+    onAddToCartClick: (getproductbyid) -> Unit,
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.padding(bottom = 16.dp),
+                title = { Text("Product Details") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier.testTag("back_button"),
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                        )
+                    }
+                },
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+            )
+        },
+    ) { paddingValues ->
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(top = 6.dp)
+                    .verticalScroll(rememberScrollState()),
+        ) {
+            when (val istate = uiState) {
+                productByIdUiState.Idle -> {}
+                productByIdUiState.Loading -> {
+                    androidx.compose.foundation.layout.Box(
+                        modifier = Modifier.fillMaxWidth().height(200.dp).testTag("loading_indicator"),
+                        contentAlignment = Alignment.Center,
+                    ) { CircularProgressIndicator() }
+                }
 
-                  is ProductByIdUiState.Error -> {
-                      val message = when (val error = istate.error) {
-                          UiError.NoInternet -> "Check your Internet"
-                          is UiError.Http -> "Error ${error.code}"
-                          UiError.Unknown -> "Unknown Error"
-                          else -> ""
-                      }
+                is productByIdUiState.Error -> {
+                    val message =
+                        when (val error = istate.error) {
+                            UiError.NoInternet -> "Check your Internet"
+                            is UiError.Http -> "Error ${error.code}"
+                            UiError.Unknown -> "Unknown Error"
+                            else -> ""
+                        }
 
-                      Column(
-                          modifier = Modifier
-                              .fillMaxWidth()
-                              .padding(16.dp),
-                          verticalArrangement = Arrangement.spacedBy(8.dp),
-                          horizontalAlignment = Alignment.CenterHorizontally
-                      ) {
-                          Text(text = message, style = MaterialTheme.typography.bodyLarge)
-                          Button(
-                              onClick = onRetryClick,
-                              modifier = Modifier.testTag("retry_button")
-                          ) {
-                              Text("Retry")
-                          }
-                      }
-                  }
+                    Column(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(text = message, style = MaterialTheme.typography.bodyLarge)
+                        Button(
+                            onClick = onRetryClick,
+                            modifier = Modifier.testTag("retry_button"),
+                        ) {
+                            Text("Retry")
+                        }
+                    }
+                }
 
-                  is ProductByIdUiState.Success -> {
-                      val product = istate.product
-                      val imageUrl = product.images?.firstOrNull()
+                is productByIdUiState.Success -> {
+                    val product = istate.product
+                    val imageUrl = product.images?.firstOrNull()
 
-                      Column(
-                          modifier = Modifier
-                              .fillMaxWidth()
-                              .padding(16.dp)
-                              .wrapContentHeight(),
-                          verticalArrangement = Arrangement.spacedBy(16.dp),
-                      ) {
+                    Column(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                                .wrapContentHeight(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        if (imageUrl != null) {
+                            AsyncImage(
+                                model = imageUrl,
+                                contentDescription = product.title,
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(300.dp),
+                                contentScale = ContentScale.Crop,
+                            )
+                        } else {
+                            Spacer(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(300.dp),
+                            )
+                        }
 
-                          if (imageUrl != null) {
-                              AsyncImage(
-                                  model = imageUrl,
-                                  contentDescription = product.title,
-                                  modifier = Modifier
-                                      .fillMaxWidth()
-                                      .height(300.dp),
-                                  contentScale = ContentScale.Crop
-                              )
-                          } else {
-                              Spacer(
-                                  modifier = Modifier
-                                      .fillMaxWidth()
-                                      .height(300.dp)
-                              )
-                          }
+                        Column(Modifier.padding(16.dp)) {
+                            Text(product.title.orEmpty(), style = MaterialTheme.typography.headlineSmall)
+                            Spacer(Modifier.height(8.dp))
+                            Text("EGP ${product.price}")
+                            Spacer(Modifier.height(8.dp))
+                            Text(product.category.name)
+                            Spacer(Modifier.height(8.dp))
+                            Text(product.description.orEmpty())
+                            Spacer(Modifier.height(16.dp))
 
-                          Column(Modifier.padding(16.dp)) {
-                              Text(product.title.orEmpty(), style = MaterialTheme.typography.headlineSmall)
-                              Spacer(Modifier.height(8.dp))
-                              Text("EGP ${product.price}")
-                              Spacer(Modifier.height(8.dp))
-                              Text(product.category.name)
-                              Spacer(Modifier.height(8.dp))
-                              Text(product.description.orEmpty())
-                              Spacer(Modifier.height(16.dp))
-
-                              Button(
-                                  onClick = { onAddToCartClick(product) },
-                                  modifier = Modifier
-                                      .fillMaxWidth()
-                                      .height(52.dp)
-                                      .testTag("add_to_cart_button"),
-                                  shape = androidx.compose.foundation.shape.RoundedCornerShape(14.dp),
-                                  colors = ButtonDefaults.buttonColors(
-                                      containerColor = MaterialTheme.colorScheme.primary,
-                                      contentColor = MaterialTheme.colorScheme.onPrimary
-                                  )
-                              ) {
-                                  Text(
-                                      text = "Add to Cart",
-                                      style = MaterialTheme.typography.titleSmall,
-                                      fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-                                  )
-                              }
-                          }
-                      }
-                  }
-              }
-          }
-      }
+                            Button(
+                                onClick = { onAddToCartClick(product) },
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(52.dp)
+                                        .testTag("add_to_cart_button"),
+                                shape =
+                                    androidx.compose.foundation.shape
+                                        .RoundedCornerShape(14.dp),
+                                colors =
+                                    ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                                    ),
+                            ) {
+                                Text(
+                                    text = "Add to Cart",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
-
-

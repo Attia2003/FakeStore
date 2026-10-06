@@ -37,8 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.fakestore.core.data.dto.CategoryDto
 import com.example.fakestore.core.data.dto.getProducts
-import com.example.fakestore.core.peresention.screens.component.HorizontalCardProduct
-import com.example.fakestore.core.peresention.screens.component.HorizontalCategoryList
+import com.example.fakestore.core.peresention.screens.component.horizontalCardProduct
+import com.example.fakestore.core.peresention.screens.component.horizontalCategoryList
 import com.example.fakestore.core.peresention.uistate.ProductUiState
 import com.example.fakestore.core.peresention.uistate.UiError
 import com.example.fakestore.core.peresention.vm.CartViewModel
@@ -46,151 +46,159 @@ import com.example.fakestore.core.peresention.vm.CategoryViewModel
 import com.example.fakestore.core.peresention.vm.ProductViewModel
 
 @Composable
-fun HomeScreen(
+fun homeScreen(
     vm: ProductViewModel = hiltViewModel(),
     cartVm: CartViewModel = hiltViewModel(),
     categoryVm: CategoryViewModel = hiltViewModel(),
     onProductClick: (getProducts) -> Unit = {},
     onAddProductClick: () -> Unit = {},
-    onCategoryClick: (CategoryDto) -> Unit = {}
+    onCategoryClick: (CategoryDto) -> Unit = {},
 ) {
     val state by vm.productstate.collectAsState()
     val categoryState by categoryVm.categoryState.collectAsState()
     val listState = rememberLazyListState()
-    
+
+    val rows =
+        remember(state) {
+            (state as? ProductUiState.Success)?.products?.chunked(2) ?: emptyList()
+        }
 
     var isFabVisible by remember { mutableStateOf(true) }
     val previousScrollOffset = remember { mutableStateOf(0) }
-    
 
-    LaunchedEffect(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) {
-        val currentScrollOffset = listState.firstVisibleItemIndex * 1000 + listState.firstVisibleItemScrollOffset
-        
-        if (currentScrollOffset > previousScrollOffset.value && currentScrollOffset > 50) {
-
-            isFabVisible = false
-        } else if (currentScrollOffset < previousScrollOffset.value) {
-
-            isFabVisible = true
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            listState.firstVisibleItemIndex * 1000 + listState.firstVisibleItemScrollOffset
+        }.collect { currentScrollOffset ->
+            val previous = previousScrollOffset.value
+            isFabVisible =
+                when {
+                    currentScrollOffset > previous && currentScrollOffset > 50 -> false
+                    currentScrollOffset < previous -> true
+                    else -> isFabVisible
+                }
+            previousScrollOffset.value = currentScrollOffset
         }
-        
-        previousScrollOffset.value = currentScrollOffset
     }
 
     LaunchedEffect(listState) {
-        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-            .collect { lastIndex ->
-                if (lastIndex != null && lastIndex >= listState.layoutInfo.totalItemsCount - 1) {
-                    val currentState = state
-                    if (currentState is ProductUiState.Success && currentState.products.isNotEmpty()) {
-                        vm.loadNextPage()
-                    }
+        snapshotFlow {
+            listState.layoutInfo.visibleItemsInfo
+                .lastOrNull()
+                ?.index
+        }.collect { lastIndex ->
+            if (lastIndex != null && lastIndex >= listState.layoutInfo.totalItemsCount - 1) {
+                val currentState = state
+                if (currentState is ProductUiState.Success && currentState.products.isNotEmpty()) {
+                    vm.loadNextPage()
                 }
             }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = listState,
-            contentPadding = PaddingValues(vertical = 16.dp)
+            contentPadding = PaddingValues(vertical = 16.dp),
         ) {
-
             item {
-                HorizontalCategoryList(
+                horizontalCategoryList(
                     categoryState = categoryState,
                     onCategoryClick = onCategoryClick,
-                    onRetry = { categoryVm.getAllCategories() }
+                    onRetry = { categoryVm.getAllCategories() },
                 )
                 Spacer(Modifier.height(24.dp))
             }
-            
+
             item {
                 Text(
                     text = "Recommended Products",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                 )
                 Spacer(Modifier.height(16.dp))
             }
 
-                when (val isstate = state) {
-                    ProductUiState.Idle -> {
-                        item {
-                        }
+            when (val isstate = state) {
+                ProductUiState.Idle -> {
+                    item {
                     }
+                }
 
-                    ProductUiState.Loading -> {
-                        item {
-                            Box(
-                                modifier = Modifier
+                ProductUiState.Loading -> {
+                    item {
+                        Box(
+                            modifier =
+                                Modifier
                                     .fillMaxWidth()
                                     .height(130.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
-                            }
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CircularProgressIndicator()
                         }
                     }
+                }
 
-                    is ProductUiState.Error -> {
-                        item {
-                            val message = when (val eror = isstate.eror) {
+                is ProductUiState.Error -> {
+                    item {
+                        val message =
+                            when (val eror = isstate.eror) {
                                 UiError.NoInternet -> "Check ur Internet"
                                 is UiError.Http -> "Error ${eror.code}"
                                 UiError.Unknown -> "Unknown Error"
                                 else -> ""
                             }
-                            Column(
-                                modifier = Modifier
+                        Column(
+                            modifier =
+                                Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 12.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(text = message)
-                                Button(onClick = { vm.getFirstProduct() }) {
-                                    Text("Retry")
-                                }
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            Text(text = message)
+                            Button(onClick = { vm.getFirstProduct() }) {
+                                Text("Retry")
                             }
                         }
                     }
+                }
 
-                    is ProductUiState.Success -> {
-                        val products = isstate.products
-                        val rows = products.chunked(2)
-                        rows.forEachIndexed { index, rowProducts ->
-                            item(key = "row_$index") {
-                                androidx.compose.foundation.layout.Row(
-                                    modifier = Modifier
+                is ProductUiState.Success -> {
+                    rows.forEachIndexed { index, rowProducts ->
+                        item(key = rowProducts.joinToString("_") { it.id.toString() }) {
+                            androidx.compose.foundation.layout.Row(
+                                modifier =
+                                    Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
-                                ) {
-                                    for (product in rowProducts) {
-                                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                                            HorizontalCardProduct(
-                                                product = product,
-                                                onClick = { onProductClick(product) },
-                                                onAddToCartClick = { selectedProduct ->
-                                                    cartVm.addToCart(
-                                                        productId = selectedProduct.id,
-                                                        title = selectedProduct.title.orEmpty(),
-                                                        price = selectedProduct.price.toDouble(),
-                                                        imageUrl = selectedProduct.images?.firstOrNull().orEmpty()
-                                                    )
-                                                }
-                                            )
-                                        }
+                                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+                            ) {
+                                for (product in rowProducts) {
+                                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                                        horizontalCardProduct(
+                                            product = product,
+                                            onClick = { onProductClick(product) },
+                                            onAddToCartClick = { selectedProduct ->
+                                                cartVm.addToCart(
+                                                    productId = selectedProduct.id,
+                                                    title = selectedProduct.title.orEmpty(),
+                                                    price = selectedProduct.price.toDouble(),
+                                                    imageUrl = selectedProduct.images?.firstOrNull().orEmpty(),
+                                                )
+                                            },
+                                        )
                                     }
-                                    if (rowProducts.size < 2) {
-                                        Spacer(modifier = Modifier.weight(1f))
-                                    }
+                                }
+                                if (rowProducts.size < 2) {
+                                    Spacer(modifier = Modifier.weight(1f))
                                 }
                             }
                         }
                     }
                 }
+            }
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -201,19 +209,20 @@ fun HomeScreen(
             visible = isFabVisible,
             enter = slideInVertically(initialOffsetY = { it }),
             exit = slideOutVertically(targetOffsetY = { it }),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
+            modifier =
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
         ) {
             FloatingActionButton(
                 onClick = onAddProductClick,
                 shape = CircleShape,
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                contentColor = MaterialTheme.colorScheme.onPrimary,
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add Product"
+                    contentDescription = "Add Product",
                 )
             }
         }

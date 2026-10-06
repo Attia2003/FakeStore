@@ -1,15 +1,14 @@
 package com.example.fakestore.core.data.repository
 
-import com.example.fakestore.core.data.dto.getProducts
 import com.example.fakestore.core.data.dto.getproductbyid
 import com.example.fakestore.core.data.remote.ApiService
 import com.example.fakestore.core.domain.contract.CategoryByIdRepository
 import javax.inject.Inject
 
-class CategoryByIdRepoImpl @Inject constructor(
-    private val api: ApiService
-) : CategoryByIdRepository {
-    override suspend fun getProductsByCategory(id: Int): List<getproductbyid> {
-        return api.getProductsByCategory(id)
+class CategoryByIdRepoImpl
+    @Inject
+    constructor(
+        private val api: ApiService,
+    ) : CategoryByIdRepository {
+        override suspend fun getProductsByCategory(id: Int): List<getproductbyid> = api.getProductsByCategory(id)
     }
-}

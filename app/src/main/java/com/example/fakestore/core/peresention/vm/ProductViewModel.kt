@@ -14,72 +14,78 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductViewModel @Inject constructor(private val getproduct : ProductUseCaase) : ViewModel() {
+class ProductViewModel
+    @Inject
+    constructor(
+        private val getproduct: ProductUseCaase,
+    ) : ViewModel() {
+        private val _productstate = MutableStateFlow<ProductUiState>(ProductUiState.Idle)
+        val productstate: StateFlow<ProductUiState> = _productstate
 
-    private val _productstate = MutableStateFlow<ProductUiState>(ProductUiState.Idle)
-    val productstate : StateFlow<ProductUiState> = _productstate
+        private var currentOffset = 0
+        private val limit = 10
+        private var isPaginationExhausted = false
+        private var isLoadingMore = false
+        private var isRefreshing = false
+        private val productsList = mutableListOf<getProducts>()
 
-    private var currentOffset = 0
-    private val limit = 10
-    private var isPaginationExhausted = false
-    private var isLoadingMore = false
-    private var isRefreshing = false
-    private val productsList = mutableListOf<getProducts>()
+        init {
+            getFirstProduct()
+        }
 
-    init {
-        getFirstProduct()
-    }
+        fun getFirstProduct() {
+            if (isRefreshing) return
 
-    fun getFirstProduct(){
-        if (isRefreshing) return
+            currentOffset = 0
+            isPaginationExhausted = false
+            isLoadingMore = false
+            productsList.clear()
+            isRefreshing = true
 
-        currentOffset = 0
-        isPaginationExhausted = false
-        isLoadingMore = false
-        productsList.clear()
-        isRefreshing = true
-
-        viewModelScope.launch {
-            _productstate.value = ProductUiState.Loading
-            try {
-                val products = getproduct.call(currentOffset, limit)
-                productsList.addAll(products)
-                if (products.size < limit) {
-                    isPaginationExhausted = true
+            viewModelScope.launch {
+                _productstate.value = ProductUiState.Loading
+                try {
+                    val products = getproduct.call(currentOffset, limit)
+                    productsList.addAll(products)
+                    if (products.size < limit) {
+                        isPaginationExhausted = true
+                    }
+                    _productstate.value = ProductUiState.Success(productsList.toList())
+                    currentOffset += limit
+                } catch (e: Exception) {
+                    Log.d("ProductError", e.message.toString())
+                    _productstate.value = ProductUiState.Error(e.toUiError())
+                } finally {
+                    isRefreshing = false
                 }
-                _productstate.value = ProductUiState.Success(productsList.toList())
-                currentOffset += limit
-            } catch (e: Exception) {
-                Log.d("ProductError", e.message.toString())
-                _productstate.value = ProductUiState.Error(e.toUiError())
-            } finally {
-                isRefreshing = false
+            }
+        }
+
+        fun loadNextPage() {
+            if (isPaginationExhausted ||
+                isLoadingMore ||
+                _productstate.value is
+                    ProductUiState.Loading ||
+                _productstate.value is ProductUiState.Error
+            ) {
+                return
+            }
+
+            isLoadingMore = true
+            viewModelScope.launch {
+                try {
+                    val newProducts = getproduct.call(currentOffset, limit)
+                    if (newProducts.size < limit) {
+                        isPaginationExhausted = true
+                    }
+                    productsList.addAll(newProducts)
+                    _productstate.value = ProductUiState.Success(productsList.toList())
+                    currentOffset += limit
+                } catch (e: Exception) {
+                    Log.d("ProductError Pagination", e.message.toString())
+                } finally {
+                    isLoadingMore = false
+                }
             }
         }
     }
-
-    fun loadNextPage() {
-        if (isPaginationExhausted || isLoadingMore || _productstate.value is
-                    ProductUiState.Loading || _productstate.value is ProductUiState.Error) {
-            return
-        }
-
-        isLoadingMore = true
-        viewModelScope.launch {
-            try {
-                val newProducts = getproduct.call(currentOffset, limit)
-                if (newProducts.size < limit) {
-                    isPaginationExhausted = true
-                }
-                productsList.addAll(newProducts)
-                _productstate.value = ProductUiState.Success(productsList.toList())
-                currentOffset += limit
-            } catch (e: Exception) {
-                Log.d("ProductError Pagination", e.message.toString())
-
-            } finally {
-                isLoadingMore = false
-            }
-        }
-    }
-}
